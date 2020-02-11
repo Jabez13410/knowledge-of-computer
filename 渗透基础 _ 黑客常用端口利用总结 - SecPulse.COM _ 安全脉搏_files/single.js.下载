@@ -1,0 +1,206 @@
+;(function(window) {
+	'use strict';
+	// taken from mo.js demos
+	function isIOSSafari() {
+		var userAgent;
+		userAgent = window.navigator.userAgent;
+		return userAgent.match(/iPad/i) || userAgent.match(/iPhone/i);
+	};
+
+	// taken from mo.js demos
+	function isTouch() {
+		var isIETouch;
+		isIETouch = navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+		return [].indexOf.call(window, 'ontouchstart') >= 0 || isIETouch;
+	};
+	
+	// taken from mo.js demos
+	var isIOS = isIOSSafari(),
+		clickHandler = isIOS || isTouch() ? 'touchstart' : 'click';
+
+	function extend( a, b ) {
+		for( var key in b ) { 
+			if( b.hasOwnProperty( key ) ) {
+				a[key] = b[key];
+			}
+		}
+		return a;
+	}
+
+	function Animocon(el, options) {
+		this.el = el;
+		this.options = extend( {}, this.options );
+		extend( this.options, options );
+
+		this.checked = false;
+
+		this.timeline = new mojs.Timeline();
+		
+		for(var i = 0, len = this.options.tweens.length; i < len; ++i) {
+			this.timeline.add(this.options.tweens[i]);
+		}
+
+		var self = this;
+		this.el.addEventListener(clickHandler, function() {
+			if( self.checked ) {
+				self.options.onUnCheck();
+			}
+			else {
+				self.options.onCheck();
+				self.timeline.start();
+			}
+			self.checked = !self.checked;
+		});
+	}
+
+	Animocon.prototype.options = {
+		tweens : [
+			new mojs.Burst({
+				shape : 'circle',
+				isRunLess: true
+			})
+		],
+		onCheck : function() { return false; },
+		onUnCheck : function() { return false; }
+	};
+
+	// grid items:
+	var items = [].slice.call(document.querySelectorAll('ol.grid > .grid__item'));
+
+	function init() {
+		/* Icon 6 */
+		var el6 = items[0].querySelector('button.icobutton'), el6span = el6.querySelector('span');
+		var scaleCurve6 = mojs.easing.path('M0,100 L25,99.9999983 C26.2328835,75.0708847 19.7847843,0 100,0');
+		new Animocon(el6, {
+			tweens : [
+				// burst animation
+				new mojs.Burst({
+					parent: el6,
+					duration: 1500,
+					shape : 'circle',
+					fill : 'white',
+					x: '50%',
+					y: '50%',
+					childOptions: { 
+						radius: {12:0},
+						type: 'line',
+						stroke: '#297bc7',
+						strokeWidth: 2
+					},
+					radius: {40:110},
+					count: 20,
+					isRunLess: true,
+					easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
+				}),
+				// ring animation
+				new mojs.Transit({
+					parent: el6,
+					duration: 800,
+					type: 'circle',
+					radius: {10: 60},
+					fill: 'transparent',
+					stroke: '#297bc7',
+					strokeWidth: {30:0},
+					x: '50%',     
+					y: '50%',
+					isRunLess: true,
+					easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
+				}),
+				// icon scale animation
+				new mojs.Tween({
+					duration : 800,
+					easing: mojs.easing.bezier(0.1, 1, 0.3, 1),
+					onUpdate: function(progress) {
+						var scaleProgress = scaleCurve6(progress);
+						el6span.style.WebkitTransform = el6span.style.transform = 'scale3d(' + progress + ',' + progress + ',1)';
+					}
+				})
+			],
+			onCheck : function() {
+				el6.style.color = '#297bc7';
+			},
+			onUnCheck : function() {
+				if(el6.style.color !='rgb(41, 123, 199)'){
+					el6.style.color = '#C0C1C3';
+				}
+			}
+		});
+		/* Icon 6 */
+
+		
+		// bursts when hovering the mo.js link
+		var molinkEl = document.querySelector('.special-link'),
+			moTimeline = new mojs.Timeline(),
+			moburst1 = new mojs.Burst({
+				parent: molinkEl,
+				duration: 1300,
+				shape : 'circle',
+				fill : [ '#988ADE', '#DE8AA0', '#8AAEDE', '#8ADEAD', '#DEC58A', '#8AD1DE' ],
+				x: '0%',
+				y: '-50%',
+				radius: {0:60},
+				count: 6,
+				isRunLess: true,
+				easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
+			}),
+			moburst2 = new mojs.Burst({
+				parent: molinkEl,
+				duration: 1600,
+				delay: 100,
+				shape : 'circle',
+				fill : [ '#988ADE', '#DE8AA0', '#8AAEDE', '#8ADEAD', '#DEC58A', '#8AD1DE' ],
+				x: '-100%',
+				y: '-20%',
+				radius: {0:120},
+				count: 14,
+				isRunLess: true,
+				easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
+			}),
+			moburst3 = new mojs.Burst({
+				parent: molinkEl,
+				duration: 1500,
+				delay: 200,
+				shape : 'circle',
+				fill : [ '#988ADE', '#DE8AA0', '#8AAEDE', '#8ADEAD', '#DEC58A', '#8AD1DE' ],
+				x: '130%',
+				y: '-70%',
+				radius: {0:90},
+				count: 8,
+				isRunLess: true,
+				easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
+			}),
+			moburst4 = new mojs.Burst({
+				parent: molinkEl,
+				duration: 2000,
+				delay: 300,
+				shape : 'circle',
+				fill : [ '#988ADE', '#DE8AA0', '#8AAEDE', '#8ADEAD', '#DEC58A', '#8AD1DE' ],
+				x: '-20%',
+				y: '-150%',
+				radius: {0:60},
+				count: 14,
+				isRunLess: true,
+				easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
+			}),
+			moburst5 = new mojs.Burst({
+				parent: molinkEl,
+				duration: 1400,
+				delay: 400,
+				shape : 'circle',
+				fill : [ '#988ADE', '#DE8AA0', '#8AAEDE', '#8ADEAD', '#DEC58A', '#8AD1DE' ],
+				x: '30%',
+				y: '-100%',
+				radius: {0:60},
+				count: 12,
+				isRunLess: true,
+				easing: mojs.easing.bezier(0.1, 1, 0.3, 1)
+			});
+
+		moTimeline.add(moburst1, moburst2, moburst3, moburst4, moburst5);
+		molinkEl.addEventListener('mouseenter', function() {
+			moTimeline.start();
+		});
+	}
+	init();
+
+})(window);

@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)https://www.secpulse.com/archives/117822.html -->
+<html lang="en" class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link rel="stylesheet" type="text/css" href="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/swipeslider.css">
+<title>渗透基础 | 黑客常用端口利用总结 - SecPulse.COM | 安全脉搏</title>
+<meta name="description" content="7001/7002端口渗透剖析">
+<meta name="keywords" content="渗透,端口利用,端口渗透剖析">
+
+
+
+    		<script src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/hm.js.下载"></script><script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"https:\/\/www.secpulse.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.2.2"}};
+			!function(a,b,c){function d(a){var c=b.createElement("canvas"),d=c.getContext&&c.getContext("2d");return d&&d.fillText?(d.textBaseline="top",d.font="600 32px Arial","flag"===a?(d.fillText(String.fromCharCode(55356,56812,55356,56807),0,0),c.toDataURL().length>3e3):(d.fillText(String.fromCharCode(55357,56835),0,0),0!==d.getImageData(16,16,1,1).data[0])):!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g;c.supports={simple:d("simple"),flag:d("flag")},c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.simple&&c.supports.flag||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/wp-emoji-release.min.js.下载" type="text/javascript"></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="style-css" href="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/style.css" type="text/css" media="all">
+<link rel="stylesheet" id="iconfont-css" href="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/iconfont.css" type="text/css" media="all">
+<link rel="stylesheet" id="jquery.fancybox-css" href="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/jquery.fancybox.css" type="text/css" media="all">
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/jquery-2.1.1.min.js.下载"></script>
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/common.js.下载"></script>
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/comments-ajax.js.下载"></script>
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/jquery-migrate-1.2.1.js.下载"></script>
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/jquery.qqFace.js.下载"></script>
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/jquery.fancybox.js.下载"></script>
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/jquery.fancybox-buttons.js.下载"></script>
+<link rel="canonical" href="https://www.secpulse.com/archives/117822.html">
+<script type="text/javascript" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/shCore.js.下载"></script><link type="text/css" rel="stylesheet" href="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/shCoreDefault.css">    <style type="text/css">.fancybox-margin{margin-right:17px;}</style></head>
+<body> 
+
+
+<input id="home_url" type="hidden" value="https://www.secpulse.com/wp-admin/admin-ajax.php">
+    <div id="header" style="position:fixed;left:0;" class="gizle sabit">
+        <div class="header-width-lg clearfix">
+            <div class="header-logo fl">
+	<a href="https://www.secpulse.com/" title="安全脉搏">
+		<img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/logo-header.png" alt="">
+	</a>
+</div>            
+            <div class="header-menu fl"><ul id="menu-%e6%96%b0%e7%89%88%e6%9c%ac2017" class="header-menu_ul"><li id="menu-item-61479" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-61479"><a target="_blank" href="https://www.secpulse.com/">首页</a></li>
+<li id="menu-item-61480" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-has-children menu-item-61480"><a target="_self" href="javascript:void(0)" style="cursor: default; color: rgb(15, 72, 125);">分类阅读</a><div class="read_hide" style="display: none;"><ul class="dropdown-menu"><h4>脉搏文库</h4><ul class="clearfix title_top"><li id="menu-item-61484" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-61484"><a target="_blank" href="https://www.secpulse.com/archives/category/articles/intranet-penetration">内网渗透</a></li><li><small>|</small></li>
+<li id="menu-item-61483" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61483"><a target="_blank" href="https://www.secpulse.com/archives/category/articles/code-audit">代码审计</a></li><li><small>|</small></li>
+<li id="menu-item-61485" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61485"><a target="_blank" href="https://www.secpulse.com/archives/category/articles/sec-doc">安全文献</a></li><li><small>|</small></li>
+<li id="menu-item-61482" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61482"><a target="_blank" href="https://www.secpulse.com/archives/category/articles/web">Web安全</a></li><li><small>|</small></li>
+<li id="menu-item-61489" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61489"><a target="_blank" href="https://www.secpulse.com/archives/category/articles/mobile-security">移动安全</a></li><li><small>|</small></li>
+<li id="menu-item-61487" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61487"><a target="_blank" href="https://www.secpulse.com/archives/category/articles/system">系统安全</a></li><li><small>|</small></li>
+<li id="menu-item-61486" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61486"><a target="_blank" href="https://www.secpulse.com/archives/category/articles/industrial-safety">工控安全</a></li><li><small>|</small></li>
+<li id="menu-item-61488" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61488"><a target="_blank" href="https://www.secpulse.com/archives/category/exclusive/ctf-writeup">CTF</a></li><li></li>
+</ul>
+<h4>安全建设</h4><ul class="clearfix title_top"><li id="menu-item-61491" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61491"><a target="_blank" href="https://www.secpulse.com/archives/category/construction/businesssecurity">业务安全</a></li><li><small>|</small></li>
+<li id="menu-item-61492" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61492"><a target="_blank" href="https://www.secpulse.com/archives/category/construction/securityissue">安全管理</a></li><li><small>|</small></li>
+<li id="menu-item-61493" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61493"><a target="_blank" href="https://www.secpulse.com/archives/category/construction/bigdata">数据分析</a></li><li></li>
+</ul>
+<h4>其他</h4><ul class="clearfix title_top"><li id="menu-item-61498" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61498"><a target="_blank" href="https://www.secpulse.com/archives/category/news">资讯</a></li><li><small>|</small></li>
+<li id="menu-item-61656" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61656"><a target="_blank" href="https://www.secpulse.com/archives/category/vul">漏洞</a></li><li><small>|</small></li>
+<li id="menu-item-61496" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-61496"><a target="_blank" href="https://www.secpulse.com/archives/category/tools">工具</a></li><li><small>|</small></li>
+<li id="menu-item-65393" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-65393"><a target="_blank" href="https://www.secpulse.com/archives/category/people">人物志</a></li><li><small>|</small></li>
+<li id="menu-item-71704" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-71704"><a target="_blank" href="https://www.secpulse.com/archives/category/exclusive/block_chain_security">区块链安全</a></li><li><small>|</small></li>
+<li id="menu-item-74126" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-74126"><a target="_blank" href="https://www.secpulse.com/archives/category/hiring">安全招聘</a></li><li></li>
+</ul>
+</ul></div></li>
+<li id="menu-item-97701" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-97701"><a target="_blank" href="https://www.secpulse.com/newpage/question_list">安全问答</a></li>
+<li id="menu-item-61501" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-61501"><a target="_blank" href="https://www.secpulse.com/shop?donotcachepage=c010349fd98847cb9d6e07d3cbc19288">金币商城</a></li>
+<li id="menu-item-67532" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-67532"><a target="_blank" href="https://www.secpulse.com/archives/category/hiring">安全招聘</a></li>
+<li id="menu-item-61499" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-61499"><a target="_blank" href="https://www.secpulse.com/newpage/activity">活动日程</a></li>
+<li id="menu-item-93620" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-93620"><a target="_blank" href="https://www.secpulse.com/live">live课程</a></li>
+<li id="menu-item-61500" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-61500"><a target="_blank" href="https://duoyinsu.com/service.html">企业服务</a></li>
+<li id="menu-item-112425" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-112425"><a target="_blank" href="https://x.secpulse.com/">插件社区</a></li>
+</ul></div>            <!-- 登录头像start -->
+             
+                                                            <div class="user fr">
+                            <a href="javascript:void(0)" class="wxchat mr20" id="wxchat">
+                                <i class="iconfont icon-xiaochengxu"></i>
+                                <span>小程序</span>
+                                <div class="wxchat_hide">
+                                    <img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/wxchat.jpg" width="100%" alt="脉搏小程序"><p>扫一扫</p><p>了解小程序</p>
+                                </div>
+                            </a>
+                            <a href="https://www.secpulse.com/user_login">登录</a>
+                            <a href="javascript:void(0);">|</a>
+                            <a href="https://www.secpulse.com/user-register">注册</a>
+                        </div>
+                                                     
+                
+            <!-- 登录头像end -->
+        </div>
+    </div>
+    <div style="height:70px"></div>
+    <input id="wp_home_url" value="https://www.secpulse.com" style="display: none;">
+    <input id="template_url" value="https://www.secpulse.com/wp-content/themes/secpulse2017" style="display: none;">
+            <!-- 文章详情页的返回顶部 -->
+        <div class="goTop goTopComment">
+            <i class="iconfont icon-fanhuidingbu blue pointer" style="bottom:115px;"></i>
+            <a href="https://www.secpulse.com/archives/117822.html#goComment"><i class="iconfont icon-pinglun blue pointer" style="bottom:70px;"></i></a>
+            <i class="iconfont icon-fanhuidingbu-copy blue pointer" style="bottom:25px;"></i>
+        </div>
+   <script>
+$(".menu-item-has-children>a").attr("href","javascript:void(0)").attr("target","_self").css("cursor","default");
+$(".menu-item-has-children").hover(function(){
+    $(".read_hide").show();
+},function(){
+    $(".read_hide").hide();
+});
+$(".login_self").hover(function(){
+    $(".loginout_hide").show();
+    $(".loginout").text("▲");
+},function(){
+    $(".loginout_hide").hide();
+    $(".loginout").text("▼");
+});
+// 返回顶部
+$(function(){    
+    $(function(){   
+        $('.icon-fanhuidingbu').click(function(){  
+            $('body,html').animate({scrollTop:0},500);  
+            return false;                   
+        }) 
+        $(".icon-fanhuidingbu-copy").click(function(){
+            // console.log(document.body.clientHeight)
+            // console.log(document.body.offsetHeight)
+            $("html,body").animate({
+                scrollTop: document.body.offsetHeight},500);
+            return false; 
+        })        
+    })      
+// 上拉显示导航栏 下拉隐藏
+    var cubuk_seviye = $(document).scrollTop();  
+    var header_yuksekligi = $('#header').outerHeight();    
+    $(window).scroll(function() {  
+        var kaydirma_cubugu = $(document).scrollTop();  
+  
+        if (kaydirma_cubugu > header_yuksekligi){$('#header').addClass('gizle');}   
+        else {$('#header').removeClass('gizle');}  
+  
+        if (kaydirma_cubugu > cubuk_seviye){$('#header').removeClass('sabit');}   
+        else {$('#header').addClass('sabit');}                  
+  
+        cubuk_seviye = $(document).scrollTop();   
+     });  
+});
+$(".nav_small .icon-nav").on("click",function(){
+    var $list =$(".nav_small_list");
+    if($list.css('display') == 'none'){
+        $list.slideDown();
+    }else{
+        $list.slideUp();
+    }  
+})
+$(".nav_read_click").on("click",function(){
+    var $readList =$(".nav_small_list_read");
+    if($readList.css('display') == 'none'){
+        $readList.slideDown();
+    }else{
+        $readList.slideUp();
+    }
+})
+</script>
+
+
+
+<link rel="stylesheet" type="text/css" href="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/icons.css">
+<style>
+/*活动详情页*/
+#detail_main{max-width:100%;width:1200px;margin:15px auto 0;}
+.left-9{max-width:100%;width:840px;word-wrap:break-word;border-radius:5px;}
+.left-9-article{max-width:100%;width:840px;background: #fff;padding:25px 20px 80px;position:relative;border-radius:5px;margin:0 auto;}
+.left-9 .wrap-title h1{font-size:22px;margin-top:5px;line-height:2;color:#297bc7;}
+.left .writer img{vertical-align:middle;}
+.right-3{width:335px;}
+.right-3 .tr0 a.blue:hover{color:#297bc7!important;}
+.left-9-code code,#detail_main .left-9-code pre{display: block;background-color:#F0F0F0;padding:8px;margin:15px 0;line-height:18px;border-radius:3px;font-size:13px;}
+.left-9-code code{display:inline-block}
+.left-9-code blockquote {display:block;border:1px solid #00afef;border-left:3px solid #00afef;background:#F8FAFB;border-radius:3px;padding:2px 8px;margin:10px 5px;line-height: 1.4;font-size: 100%;}
+.left-9-code small{display:inline-block;border:1px solid #ddd;background:#FFFDF6;border-radius:3px;padding:0 4px;margin:0 5px;line-height:1.4;font-size:100%;}
+.left-9-code a{text-decoration:underline !important;}
+.left-9-code h2{font-size:20px;margin: 20px 0px 15px 0px!important;padding-left:8px;border-left:3px solid #548DD4;color:#548DD4;}
+.left-9-code h2>span{font-size:20px!important;}
+.single-meta{width:100%;margin:12px 0 15px;color:#5b5b5b;font-size:14px;line-height:25px;display:inline-block;}
+.single-meta .writer a{color:rgba(0,0,0,.8);}
+.single-meta .tag a{color:rgba(0,0,0,.8);}
+.single-meta i{display:inline-block;}
+.single-meta a:hover,.single-meta .writer a:hover{color:#297bc7;}
+.content{border-left:3px solid #ddd;margin:0 0 20px 20px;padding-left:10px;}
+.left-9 table{border-collapse:collapse;max-width:100%!important;}
+.left-9 table th,#detail_main .left-9 table td{word-break:break-all;word-wrap:break-word;white-space:pre-wrap;text-align: center;border:1px solid #ccc;padding:3px 5px;}
+/* .left-9-code section,.left-9-code img,.left-9-code table{max-width:100%!important;border:1px solid #eee;} */
+.left-9-code img,.left-9-code table{max-width:100%!important;border:1px solid #eee;}
+.left-9-code ol,.left-9-code ul{margin-left:40px;}
+.left-9-code li{margin:0 !important;}
+.left-9-code p{line-height:1.8!important;font-size:16px!important;}
+.left-9>p{font-size:16px;margin: 0 0 1rem;line-height:1.9;}
+.left-9 ol li{font-size:16px;margin:0 0 1rem;line-height:1.9;}
+.left-9 ol li .icobutton:hover{color:#297bc7;}
+.content p{font-size: 16px;text-indent:2rem;margin:8px 0;}
+.content a{color:#EF5B64;display:inline-block;margin:.3em 0;font-size:18px;}
+table{width:100%;text-align:center;margin-bottom:25px;background:#fff;padding:15px;border-radius:5px;}
+.img{width:60px;height:60px;margin-right:12px;border-radius:50%;border:2px solid #297bc7;}
+table .tr1{color:#5b5b5b;}
+table .tr1 span{display:inline-block;color:#5b5b5b;margin-bottom:0px;}
+.left-9>img{width:90%;margin:20px 5%;}
+.right-3 .banner-img{display:block;width:100%;margin:15px 0;position:relative;}
+.right-3 .banner-img .img-wrp{width:100%;height:125px;background:#000;opacity:.3;position:absolute;}
+.right-3 .banner-img img{width:100%;height:125px;}
+.right-3 .img-meta{width:calc(100% - 30px);color:#fff;padding:8px 15px;position:absolute;bottom:0;right:0;}
+.right-3 .img-meta p{width:100%;font-size:15px;color:#fff;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:16px;color:#fff;}
+.left-9-icon{max-width:100%;width:840px;height:50px;line-height:50px;padding:0 20px;background:#fff;z-index:999999;box-shadow:0 -1px 3px rgba(26,26,26,.1);position:absolute;bottom:0;margin-left:-20px;}
+.isfixed{position:fixed;bottom:0;}
+#detail_main .left-9-icon a{margin-right:20px;font-size:14px;color:#5b5b5b;}
+#detail_main .icon-left a:hover{color:#297bc7;}
+.left-9-icon i{font-size:14px;margin-right:3px;}
+.left-9-icon .icon-left{position:absolute;bottom:0;}
+.left-9-icon .icon-right{position:absolute;right:0px;bottom:0;}
+.icon-fenxiang1{display:inline-block;width:40px;}
+.icon-jifen{color:#297bc7;}
+.icon-jinbi{color:#F9B721;}
+.comment{width:840px;max-width:100%;margin:20px 0;overflow:hidden;background:#fff;padding:20px;border-radius:5px;}
+.comment-num{font-size:19px;font-weight:700;}
+.comment-num span{font-size:19px;font-weight:700;}
+.comment-icon i{font-size:21px;display:inline-block;margin-right:8px;transform:translateY(1px);}
+.comment .input-text{width:calc(98% - 2px);height:40px;line-height:40px;padding-left:2%;margin:10px 0;border:1px solid #dadbdb;border-radius:5px;}
+#detail_main .wrap-textarea{display:none;width:calc(100% - 2px);border:1px solid #297bc7;border-radius:5px;margin:15px 0;}
+#detail_main .wrap-textarea textarea{width:100%;min-height:70px;max-height:500px;padding:1% 2%;border:none;background:transparent;font-size:14px;border-bottom:1px solid #297bc7;overflow:hidden;line-height: 28px;color:#333;}
+.tijiao{position:relative;padding:2px 20px;}
+.tijiao span{font-size:21px;display:inline-block;margin-right:10px;}
+.tijiao input{background:#297bc7;color:#fff;border:none;outline:none;font-weight:700;padding:1px 13px;border-radius:5px;margin-top:3px;font-size:16px;}
+.comment-real-l{width:65px;}
+.comment-real-r{width:calc(100% - 65px);}
+.comment-real-r .meta-center p img{max-width:70% !important;}
+.comment-real-r a{color:#297bc7;}
+.comment-real-r .meta-top span{font-weight:600;line-height:30px;color:#b1b1b1;}
+.comment-real-r .meta-top span.blue:hover{color:#0f487d !important;}
+.comment-real-r .meta-center{margin:10px 0;}
+.comment-real-r .meta-center p{color:#333;line-height:22px;word-break:break-all;}
+.comment-real-r .meta-bot{margin-bottom:20px;}
+.comment-real-r .meta-bot a{display: inline-block;color:#d1d1d1;}
+.comment-real-r .meta-bot a:hover{color:#297bc7;}
+.comment-real-r .meta-bot .replay:hover{color:#0f487d !important;}
+.comment-real-l img{width:55px;height:55px;border-radius:50%;}
+.comment-real li{margin:25px 0;}
+.shareMenu{display:none;width:136px;height:230px;padding:10px 0px 20px 20px;background:#fff;box-shadow:0 5px 20px rgba(26,26,26,.1);position:absolute;top:-226px;left:-100px;}
+.shareMenu a{display:block;line-height:40px;color:#8590a6;}
+.shareMenu a:hover{color:#297bc7!important;}
+.shareMenu:before{position: absolute;display: inline-block;left:100px;top: 222px;width: 0;height: 0px;content: '';border-style: solid;border-width: 6px;border-color: #fff #fff transparent transparent;transform: rotate(135deg);box-shadow: 2px -2px 2px rgba(26,26,26,.1);}
+#detail_main img{max-width:90%!important;max-height:90%!important;margin:10px 0;}
+</style>
+<div id="detail_main">
+		<div class="left-9 fl">
+      <div class="left-9-article">	
+        <div class="wrap-title" style="width:100%;position:relative;">
+    				<h1>渗透基础 | 黑客常用端口利用总结</h1>
+        </div>
+  			<div class="single-meta">
+  				<div class="left fl">
+  					<span class="tag mr20"><a href="https://www.secpulse.com/archives/category/articles/intranet-penetration">内网渗透</a></span>
+  					<span class="writer">
+              <a href="https://www.secpulse.com/newpage/author?author_id=8971" class="writer_small">HACK_Learn</a>
+  						  					</span>
+  				</div>
+  				<div class="right fr" style="font-size:12px;">
+  					<i class="iconfont icon-iconfont11"></i>
+  					<span class="time mr20">2019-11-08</span>
+  					<i class="iconfont icon-browse"></i>
+  					<span class="browse">6,490</span>
+  				</div>
+  				<div class="clearfix"></div>
+  			</div>
+
+  		 	<div class="left-9-code">
+  				<table width="657" height="966" style="width: 654px;" data-mpa-powered-by="yiban.io">
+<thead>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;" class="firstRow">
+<th style="padding: 0px 18px;background-color: rgb(238, 240, 246);border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 227, 236);border-collapse: collapse;text-align: center;overflow: hidden;height: 40px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;min-width: 100px;"><span style="color: #008080;font-size: 18px;">端口</span></th>
+<th style="padding: 0px 18px;background-color: rgb(238, 240, 246);border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 227, 236);border-collapse: collapse;text-align: center;overflow: hidden;height: 40px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;min-width: 100px;"><span style="color: #008080;font-size: 18px;">服务</span></th>
+<th style="padding: 0px 18px;background-color: rgb(238, 240, 246);border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 227, 236);border-collapse: collapse;text-align: center;overflow: hidden;height: 40px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;min-width: 100px;"><span style="color: #008080;font-size: 18px;">入侵方式</span></th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">21</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">ftp/tftp/vsftpd文件传输协议</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/嗅探/溢出/后门</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">22</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">ssh远程连接</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/openssh漏洞</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">23</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Telnet远程连接</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/嗅探/弱口令</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">25</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">SMTP邮件服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">邮件伪造</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">53</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">DNS域名解析系统</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">域传送/劫持/缓存投毒/欺骗</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">67/68</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">dhcp服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">劫持/欺骗</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">110</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">pop3</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/嗅探</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">139</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Samba服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/未授权访问/远程命令执行</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">143</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Imap协议</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">161</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">SNMP协议</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/搜集目标内网信息</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">389</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Ldap目录访问协议</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">注入/未授权访问/弱口令</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">445</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">smb</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">ms17-010/端口溢出</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">512/513/514</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Linux Rexec服务<br></span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/Rlogin登陆</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">873</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Rsync服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">文件上传/未授权访问</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">1080</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">socket</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">1352</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Lotus domino邮件服务<br></span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/信息泄漏</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">1433</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">mssql</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/注入/SA弱口令</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">1521</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">oracle</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/注入/TNS爆破/反弹shell</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">2049</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Nfs服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">配置不当</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">2181</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">zookeeper服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">未授权访问</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">2375</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">docker remote api</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">未授权访问</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">3306</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">mysql</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/注入</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">3389</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Rdp远程桌面链接</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/shift后门</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">4848</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">GlassFish控制台</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/认证绕过</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">5000</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">sybase/DB2数据库</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/注入/提权</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">5432</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">postgresql</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/注入/缓冲区溢出</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">5632</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">pcanywhere服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">抓密码/代码执行</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">5900</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">vnc</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/认证绕过</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">6379</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Redis数据库</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">未授权访问/爆破</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">7001/7002</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">weblogic</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">java反序列化/控制台弱口令</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">80/443</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">http/https</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">web应用漏洞/心脏滴血</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">8069</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">zabbix服务</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">远程命令执行/注入</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">8161</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">activemq</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">弱口令/写文件</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">8080/8089</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Jboss/Tomcat/Resin</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/PUT文件上传/反序列化</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">8083/8086</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">influxDB</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">未授权访问</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">9000</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">fastcgi</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">远程命令执行</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">9090</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">Websphere控制台</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">爆破/java反序列化/弱口令</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">9200/9300</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">elasticsearch</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">远程代码执行</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">11211</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">memcached</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">未授权访问</span></td>
+</tr>
+<tr style="border-width: 0px;border-style: initial;border-color: initial;">
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">27017/27018</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">mongodb</span></td>
+<td style="padding: 0px 20px;border-top: 0px;border-left: 0px;border-right-color: rgb(223, 227, 236);border-bottom-color: rgb(223, 230, 236);border-collapse: collapse;min-width: 0px;box-sizing: border-box;text-overflow: ellipsis;vertical-align: middle;background-clip: padding-box;text-align: center;" height="40"><span style="font-size: 13px;">未授权访问/爆破</span></td>
+</tr>
+</tbody>
+</table>
+<p style="margin: 10px auto;">&nbsp;</p>
+<p style="text-align: center;"><img class="rich_pages" data-before-oversubscription-url="https://mmbiz.qpic.cn/mmbiz_jpg/Uq8Qfeuvou8wOELCyRmTbqicxWYnOlrvWpoASMSbaltibL96RUZK5R5clGdZxKs4x50UHcKoKx03x9oUENlF7gpw/0?wx_fmt=jpeg" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/beepress-image-117822-1573196898.jpeg" style="max-width: 100%; cursor: zoom-in;"></p>
+<p style="margin: 10px auto;"><strong style="font-size: 18px;font-family: 宋体;"><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">21</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong></span></span></span></strong><br></p>
+<p style="margin: 10px auto;"><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">FTP通常用作对远程服务器进行管理，典型应用就是对web系统进行管理。</span><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">一旦FTP密码泄露就直接威胁web系统安全，甚至黑客通过提权可以直接控制服务器。</span><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">这里剖析渗透FTP服务器的几种方法。</span><br></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）基础爆破：ftp爆破工具很多，这里我推owasp的Bruter,hydra以及msf中的ftp爆破模块。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>) ftp匿名访问：用户名：anonymous 密码：为空或者任意邮箱<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）后门vsftpd ：<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 50px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">version</span>&nbsp;<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>到<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 21px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2.3</span>.<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>存在后门漏洞，攻击者可以通过该漏洞获取root权限。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.freebuf.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/column/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 43px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">143480</span>.html）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）嗅探：ftp使用明文传输技术（但是嗅探给予局域网并需要欺骗或监听网关）,使用Cain进行渗透。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5</span>）ftp远程代码溢出。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/weixin_42214273/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 58px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">82892282</span>）（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">6</span>）ftp跳转攻击。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/mgxcool/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 58px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">48249473</span>）</code></pre>
+</section>
+<p style="margin: 10px auto;"><strong style="font-size: 18px;font-family: 宋体;"><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">22</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong></span></span></span></strong><br></p>
+<p style="margin: 10px auto;"><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">SSH 是协议，通常使用 OpenSSH 软件实现协议应用。</span><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">SSH 为 Secure Shell 的缩写，由 IETF 的网络工作小组（Network Working Group）所制定；</span><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">SSH 为建立在应用层和传输层基础上的安全协议。</span><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">SSH 是目前较可靠，专为远程登录会话和其它网络服务提供安全性的协议。</span><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">利用 SSH 协议可以有效防止远程管理过程中的信息泄露问题。</span><br></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）弱口令，可使用工具hydra，msf中的ssh爆破模块。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）防火墙SSH后门。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.secpulse.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/archives/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 37px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">69093</span>.html）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">28</span>退格 OpenSSL<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）openssh 用户枚举 CVE-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2018</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 36px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">15473</span>。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.anquanke.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/post/id/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 43px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">157607</span>）</code></pre>
+</section>
+<p style="margin: 10px auto;"><strong style="font-size: 18px;font-family: 宋体;"><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">23</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong></span></span></span></strong><br></p>
+<p style="margin: 10px auto;"><span style="font-size: 15px;font-family: 宋体;">telnet是一种旧的远程管理方式，使用telnet工具登录系统过程中，网络上传输的用户和密码都是以明文方式传送的，黑客可使用嗅探技术截获到此类密码。</span><br></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（1）暴力破解技术是常用的技术，使用hydra,或者msf中telnet模块对其进行破解。<br mpa-from-tpl="t">（2）在linux系统中一般采用SSH进行远程访问，传输的敏感数据都是经过加密的。而对于windows下的telnet来说是脆弱的，因为默认没有经过任何加密就在网络中进行传输。使用cain等嗅探工具可轻松截获远程登录密码。</code></pre>
+</section>
+<p style="margin: 10px auto;"><strong style="font-family: 宋体;font-size: 18px;"><span style="line-height: 28px;"><span style="color: #008080;">25/465</span></span></strong><span style="font-family: 宋体;font-size: 18px;font-weight: 700;color: #008080;">端口渗透剖析</span><br></p>
+<p style="margin: 10px auto;"><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">smtp：</span><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;">邮件协议，在linux中默认开启这个服务，可以向对方发送钓鱼邮件</span><br></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">默认端口：25（smtp）、465（smtps）<br mpa-from-tpl="t">（1）爆破：弱口令<br mpa-from-tpl="t">（2）未授权访问</code></pre>
+</section>
+<p style="margin: 10px auto;"><strong style="font-size: 18px;font-family: 宋体;"><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">53</span></span></strong></span></span>端口渗透剖析</span></span></strong><br></p>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;">53端口是DNS域名服务器的通信端口，通常用于域名解析。也是网络中非常关键的服务器之一。这类服务器容易受到攻击。对于此端口的渗透，一般有三种方式。<br style="line-height: 28px;"></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）使用DNS远程溢出漏洞直接对其主机进行溢出攻击，成功后可直接获得系统权限。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.seebug.org/vuldb/ssvid-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 36px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">96718</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）使用DNS欺骗攻击，可对DNS域名服务器进行欺骗，如果黑客再配合网页木马进行挂马攻击，无疑是一种杀伤力很强的攻击，黑客可不费吹灰之力就控制内网的大部分主机。这也是内网渗透惯用的技法之一。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//baijiahao.baidu.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 21px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/s?id=<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 137px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1577362432987749706</span>&amp;wfr=spider&amp;<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">for</span>=<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 14px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">pc</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）拒绝服务攻击，利用拒绝服务攻击可快速的导致目标服务器运行缓慢，甚至网络瘫痪。如果使用拒绝服务攻击其DNS服务器。将导致用该服务器进行域名解析的用户无法正常上网。（http://www.edu.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 15px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">cn</span>/xxh/fei/zxz/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 44px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">201503</span>/t20150305_1235269.shtml）（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）DNS劫持。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/qq_32447301/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 58px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">77542474</span>）</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: mp-quote, -apple-system-font, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;color: #008080;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">80</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong></span></span></span></strong></span></span></span></span><span style="font-family: 宋体;font-size: 14px;line-height: 28px;">80端口通常提供web服务。目前黑客对80端口的攻击典型是采用SQL<span style="text-decoration: underline;">注入</span>的攻击方法，脚本渗透技术也是一项综合性极高的web渗透技术，同时脚本渗透技术对80端口也构成严重的威胁。</span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（1）对于<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 80px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">windows2000</span>的<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 28px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">IIS5</span><span class="hljs-default-selector-class" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">.0</span>版本，黑客使用远程溢出直接对远程主机进行溢出攻击，成功后直接获得系统权限。<br mpa-from-tpl="t">（2）对于<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 80px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">windows2000</span>中<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 28px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">IIS5</span><span class="hljs-default-selector-class" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">.0</span>版本，黑客也尝试利用‘<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 65px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">Microsoft</span>&nbsp;<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 44px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">IISCGI</span>’文件名错误解码漏洞攻击。使用<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 43px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">X-SCAN</span>可直接探测到<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">IIS</span>漏洞。<br mpa-from-tpl="t">（3）<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">IIS</span>写权限漏洞是由于<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 21px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">IIS</span>配置不当造成的安全问题，攻击者可向存在此类漏洞的服务器上传恶意代码，比如上传脚本木马扩大控制权限。<br mpa-from-tpl="t">（4）普通的<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 29px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">http</span>封包是没有经过加密就在网络中传输的，这样就可通过嗅探类工具截取到敏感的数据。如使用<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 29px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">Cain</span>工具完成此类渗透。<br mpa-from-tpl="t">（5）80端口的攻击，更多的是采用脚本渗透技术，利用<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">web</span>应用程序的漏洞进行渗透是目前很流行的攻击方式。<br mpa-from-tpl="t">（6）对于渗透只开放80端口的服务器来说，难度很大。利用端口复用工具可解决此类技术难题。<br mpa-from-tpl="t">（7）<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 14px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">CC</span>攻击效果不及<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 29px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">DDOS</span>效果明显，但是对于攻击一些小型<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">web</span>站点还是比较有用的。<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 15px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">CC</span>攻击可使目标站点运行缓慢，页面无法打开，有时还会爆出<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 21px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">web</span>程序的绝对路径。</code></pre>
+</section>
+<p style="margin: 10px auto;"><strong style="font-size: 18px;font-family: 宋体;"><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">135</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"></span></p>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><span style="line-height: 28px;">135端口主要用于使用RPC协议并提供DCOM服务，通过RPC可以保证在一台计算机上运行的程序可以顺利地执行远程计算机上的代码；使用DCOM可以通过网络直接进行通信，能够跨包括HTTP协议在内的多种网络传输。同时这个端口也爆出过不少漏洞，最严重的就是缓冲区溢出漏洞，曾经疯狂一时的‘冲击波’<span style="text-decoration: underline;">病毒</span>就是利用这个漏洞进行传播的。对于135端口的渗透，黑客的渗透方法为:</span></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）查找存在RPC溢出的主机，进行远程溢出攻击，直接获得系统权限。如用‘DSScan’扫描存在此漏洞的主机。对存在漏洞的主机可使用‘ms05011.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 21px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">exe</span>’进行溢出，溢出成功后获得系统权限。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//wenku.baidu.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 29px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">view</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">68</span>b3340c79563c1ec5da710a.html）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）扫描存在弱口令的<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">135</span>主机，利用RPC远程过程调用开启telnet服务并登录telnet执行系统命令。系统弱口令的扫描一般使用hydra。对于telnet服务的开启可使用工具kali链接。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//wenku.baidu.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 29px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">view</span>/c8b96ae2700abb68a982fbdf.html）</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">139/445</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong></span></span></span></strong></span><br style="line-height: 28px;"><span style="line-height: 28px;">139端口是为‘NetBIOS SessionService’提供的，主要用于提供windows文件和打印机共享以及UNIX中的Samba服务。445端口也用于提供windows文件和打印机共享，在内网环境中使用的很广泛。这两个端口同样属于重点攻击对象，139/445端口曾出现过许多严重级别的漏洞。下面剖析渗透此类端口的基本思路。<br style="line-height: 28px;"></span></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）对于开放<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">139</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">445</span>端口的主机，一般尝试利用溢出漏洞对远程主机进行溢出攻击，成功后直接获得系统权限。利用msf的ms-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">017</span>永恒之蓝。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/qq_41880069/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 58px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">82908131</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）对于攻击只开放<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">445</span>端口的主机，黑客一般使用工具‘MS06040’或‘MS08067’.可使用专用的<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">445</span>端口扫描器进行扫描。NS08067溢出工具对windows2003系统的溢出十分有效，工具基本使用参数在cmd下会有提示。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/god_7z1/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 50px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">6773652</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）对于开放<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">139</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">445</span>端口的主机，黑客一般使用IPC$进行渗透。在没有使用特点的账户和密码进行空连接时，权限是最小的。获得系统特定账户和密码成为提升权限的关键了，比如获得administrator账户的口令。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.warhut.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 14px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">cn</span>/dmbj/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 21px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">145</span>.html）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）对于开放<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">139</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">445</span>端口的主机，可利用共享获取敏感信息，这也是内网渗透中收集信息的基本途径。</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><strong><span style="line-height: 28px;"><span style="font-size: 18px;"><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">1433</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong></span></span></span></strong></span></span></span></span><br style="line-height: 28px;"></span></strong><span style="line-height: 28px;">1433是SQLServer默认的端口，SQL Server服务使用两个端口：tcp-1433、UDP-1434.其中1433用于供SQLServer对外提供服务，1434用于向请求者返回SQLServer使用了哪些TCP/IP端口。1433端口通常遭到黑客的攻击，而且攻击的方式层出不穷。最严重的莫过于远程溢出漏洞了，如由于SQL注射攻击的兴起，各类数据库时刻面临着安全威胁。利用SQL注射技术对数据库进行渗透是目前比较流行的攻击方式，此类技术属于脚本渗透技术。<br style="line-height: 28px;"></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）对于开放<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1433</span>端口的SQL Server2000的数据库服务器，黑客尝试使用远程溢出漏洞对主机进行溢出测试，成功后直接获得系统权限。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/gxj022/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 51px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4593015</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）暴力破解技术是一项经典的技术。一般破解的对象都是SA用户。通过字典破解的方式很快破解出SA的密码。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/kali_linux/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 58px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">50499576</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）嗅探技术同样能嗅探到SQL Server的登录密码。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）由于脚本程序编写的不严密，例如，程序员对参数过滤不严等，这都会造成严重的注射漏洞。通过SQL注射可间接性的对数据库服务器进行渗透，通过调用一些存储过程执行系统命令。可以使用SQL综合利用工具完成。</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><strong><span style="line-height: 28px;"><span style="font-size: 18px;"><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><strong><span style="font-size: 14px;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;"><span style="font-size: 14px;color: #333333;line-height: 28px;"><span style="font-size: 18px;"><strong><span style="line-height: 28px;"><span style="color: #008080;">1521</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></span></span></strong></span></span></strong></span></span></span></strong></span></span></span></span><br style="line-height: 28px;"></span></strong><span style="line-height: 28px;">1521是大型数据库Oracle的默认监听端口，估计新手还对此端口比较陌生，平时大家接触的比较多的是Access，MSSQL以及MYSQL这三种数据库。一般大型站点才会部署这种比较昂贵的数据库系统。对于渗透这种比较复杂的数据库系统，黑客的思路如下：<br style="line-height: 28px;"></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）Oracle拥有非常多的默认用户名和密码，为了获得数据库系统的访问权限，破解数据库系统用户以及密码是黑客必须攻破的一道安全防线。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）SQL注射同样对Oracle十分有效，通过注射可获得数据库的敏感信息，包括管理员密码等。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）在注入点直接创建java，执行系统命令。（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.leiphone.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/news/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 43px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">201711</span>/JjzXFp46zEPMvJod.html</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">2049</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></p>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 400;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 15px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;">NFS（Network File System）即网络文件系统，是FreeBSD支持的文件系统中的一种，它允许网络中的计算机之间通过TCP/IP网络共享资源。在NFS的应用中，本地NFS的客户端应用可以透明地读写位于远端NFS服务器上的文件，就像访问本地文件一样。如今NFS具备了防止被利用导出文件夹的功能，但遗留系统中的NFS服务配置不当，则仍可能遭到恶意攻击者的利用。</span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;">未授权访问。（https://www.freebuf.com/articles/network/159468.html）&nbsp;(http://www.secist.com/archives/6192.htm)</pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">3306</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></p>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><span style="line-height: 28px;"><span style="line-height: 28px;">3306是MYSQL数据库默认的监听端口，通常部署在中型web系统中。在国内LAMP的配置是非常流行的，对于php+mysql构架的攻击也是属于比较热门的话题。mysql数据库允许用户使用自定义函数功能，这使得黑客可编写恶意的自定义函数对服务器进行渗透，最后取得服务器最高权限。对于3306端口的渗透，黑客的方法如下:<br style="line-height: 28px;"></span></span></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 7px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">1</span>）由于管理者安全意识淡薄，通常管理密码设置过于简单，甚至为空口令。使用破解软件很容易破解此类密码，利用破解的密码登录远程<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 36px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">mysql</span>数据库，上传构造的恶意<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">UDF</span>自定义函数代码进行注册，通过调用注册的恶意函数执行系统命令。或者向<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">web</span>目录导出恶意的脚本程序，以控制整个<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 21px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">web</span>系统。<br mpa-from-tpl="t">（<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 7px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">2</span>）功能强大的‘<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 29px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">cain</span>’同样支持对<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 29px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">3306</span>端口的嗅探，同时嗅探也是渗透思路的一种。<br mpa-from-tpl="t">（<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 7px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">3</span>）<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">SQL</span>注入同样对<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 36px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">mysql</span>数据库威胁巨大，不仅可以获取数据库的敏感信息，还可使用<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 65px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">load_file</span>()函数读取系统的敏感配置文件或者从<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 22px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">web</span>数据库链接文件中获得<span class="hljs-default-selector-tag" style="color: #E06C75;background: ;display: inline;width: 29px;text-decoration: none solid #E06C75;font-weight: 400;font-style: normal;">root</span>口令等，导出恶意代码到指定路径等。</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">3389</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span><br style="line-height: 28px;"><span style="line-height: 28px;">3389是windows远程桌面服务默认监听的端口，管理员通过远程桌面对服务器进行维护，这给管理工作带来的极大的方便。通常此端口也是黑客们较为感兴趣的端口之一，利用它可对远程服务器进行控制，而且不需要另外安装额外的软件，实现方法比较简单。当然这也是系统合法的服务，通常是不会被杀毒软件所查杀的。使用‘输入法漏洞’进行渗透。<br style="line-height: 28px;"></span></span></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）对于windows2000的旧系统版本，使用‘输入法漏洞’进行渗透。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）cain是一款超级的渗透工具，同样支持对<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3389</span>端口的嗅探。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）Shift粘滞键后门：<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5</span>次shift后门<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）社会工程学通常是最可怕的攻击技术，如果管理者的一切习惯和规律被黑客摸透的话，那么他管理的网络系统会因为他的弱点被渗透。（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5</span>）爆破<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3389</span>端口。这里还是推荐使用hydra爆破工具。（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">6</span>）ms12_020死亡蓝屏攻击。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.cnblogs.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/R-Hacker/<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 7px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">p</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 51px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">9178066</span>.html）（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">7</span>）http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.cnblogs.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 21px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/backlion/<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 7px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">p</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 51px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">9429738</span>.html</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><strong><span style="line-height: 28px;"><span style="font-size: 18px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">4899</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span><br style="line-height: 28px;"></span></strong><span style="line-height: 28px;">4899端口是remoteadministrator远程控制软件默认监听的端口，也就是平时常说的radmini影子。radmini目前支持TCP/IP协议，应用十分广泛，在很多服务器上都会看到该款软件的影子。对于此软件的渗透，思路如下：<br style="line-height: 28px;"></span></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（1）radmini同样存在不少弱口令的主机，通过专用扫描器可探测到此类存在漏洞的主机。<br mpa-from-tpl="t">（2）radmini远控的连接密码和端口都是写入到注册表系统中的，通过使用webshell注册表读取功能可读取radmini在注册表的各项键值内容，从而破解加密的密码散列。</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">5432</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></p>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 400;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 15px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;">PostgreSQL是一种特性非常齐全的自由软件的对象–关系型数据库管理系统，可以说是目前世界上最先进，功能最强大的自由数据库管理系统。包括kali系统中msf也使用这个数据库；浅谈postgresql数据库攻击技术 大部分关于它的攻击依旧是sql注入，所以注入才是数据库不变的话题。</span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）爆破：弱口令：postgres postgres<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）缓冲区溢出：CVE-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2014</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2669</span>。（http://drops.xmd5.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/static/drops/tips-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">6449</span>.html）（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）远程代码执行：CVE-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2018</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1058</span>。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.secpulse.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 22px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/archives/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 36px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">69153</span>.html）</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><strong><span style="line-height: 28px;"><span style="font-size: 18px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">5631</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span><br style="line-height: 28px;"></span></strong><span style="line-height: 28px;">5631端口是著名远程控制软件pcanywhere的默认监听端口，同时也是世界领先的远程控制软件。利用此软件，用户可以有效管理计算机并快速解决技术支持问题。由于软件的设计缺陷，使得黑客可随意下载<span style="line-height: 28px;">保存连接密码的*.cif文件，通过专用破解软件进行破解。这些操作都必须在拥有一定权限下才可完成，至少通过脚本渗透获得一个webshell。通常这些操作在黑客界被称为pcanywhere提权技术。<br style="line-height: 28px;"></span></span></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;">PcAnyWhere提权。（https://blog.csdn.net/Fly_hps/article/details/80377199）</pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">5900</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span><br style="line-height: 28px;"><span style="line-height: 28px;">5900端口是优秀远程控制软件VNC的默认监听端口，此软件由著名的AT&amp;T的欧洲研究实验室开发的。VNC是在基于unix和linux操作系统的免费的开放源码<span style="line-height: 28px;">软件，远程控制能力强大，高效实用，其性能可以和windows<span style="line-height: 28px;">和MAC中的任何一款控制软件媲美。对于该端口的渗透，思路如下：<br style="line-height: 28px;"></span></span></span></span></span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）VNC软件存在密码验证绕过漏洞，此高危漏洞可以使得恶意攻击者不需要密码就可以登录到一个远程系统。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）cain同样支持对VNC的嗅探，同时支持端口修改。<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）VNC的配置信息同样被写入注册表系统中，其中包括连接的密码和端口。利用webshell的注册表读取功能进行读取加密算法，然后破解。（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）VNC拒绝服务攻击（CVE-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2015</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5239</span>）。（http://blogs.<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 22px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">360</span>.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 15px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">cn</span>/post/vnc%E6%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">8</span>B%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">92</span>%E7%BB%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">9</span>D%E6%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">9</span>C%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">8</span>D%E5%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">8</span>A%A1%E6%BC%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">8</span>F%E6%B4%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">9</span>Ecve-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2015</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5239</span>%E5%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">88</span>%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">86</span>%E6%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">9</span>E%<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">90</span>.html）（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5</span>）VNC权限提升（CVE-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2013</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">6886</span>）。</code></pre>
+</section>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">6379</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></p>
+<p style="margin: 10px auto;"><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 400;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 15px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;">Redis是一个开源的使用c语言写的，支持网络、可基于内存亦可持久化的日志型、key-value数据库。关于这个数据库这两年还是很火的，暴露出来的问题也很多。特别是前段时间暴露的未授权访问。</span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）爆破：弱口令<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）未授权访问+配合ssh key提权。（http://www.alloyteam.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 21px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2017</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">07</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 36px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">12910</span>/）</code></pre>
+</section>
+<p><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">7001/7002</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span></p>
+<p><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 400;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 15px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;">7001/7002通常是weblogic中间件端口</span></span></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 6px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）弱口令、爆破，弱密码一般为weblogic/Oracle@123 <span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 14px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">or</span>&nbsp;weblogic<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）管理后台部署 war 后门<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）SSRF<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）反序列化漏洞<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5</span>）<span class="hljs-default-symbol" style="color: #61AEEE;background: ;display: inline;width: 130px;text-decoration: none solid #61AEEE;font-weight: 400;font-style: normal;">weblogic_uachttps:</span>/<span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 130px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/github.com/vulhub</span><span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 87px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/vulhub/tree</span><span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 116px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/master/weblogic</span><span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 86px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/ssrfhttps:/</span><span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 152px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/bbs.pediy.com/thread</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 44px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">224954</span>.<span class="hljs-default-symbol" style="color: #61AEEE;background: ;display: inline;width: 65px;text-decoration: none solid #61AEEE;font-weight: 400;font-style: normal;">htmhttps:</span>/<span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 94px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/fuping.site/</span><span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2017</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 15px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">06</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">05</span>/Weblogic-Vulnerability-Verification/<span class="hljs-default-symbol" style="color: #61AEEE;background: ;display: inline;width: 43px;text-decoration: none solid #61AEEE;font-weight: 400;font-style: normal;">https:</span>/<span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 188px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/blog.gdssecurity.com/labs</span><span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 43px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/2015/</span><span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 14px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">30</span>/weblogic-ssrf-<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 21px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">and</span>-xss-cve-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 28px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2014</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4241</span>-cve-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2014</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4210</span>-cve-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 29px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2014</span>-<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 7px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>.html</code></pre>
+</section>
+<p><span style="font-family: 宋体;font-size: 14px;color: #333333;line-height: 28px;"><span style="line-height: 28px;"><span style="line-height: 28px;"><span style="line-height: 28px;"><span style="font-size: 18px;"><span style="line-height: 28px;max-width: 100%;letter-spacing: normal;color: #333333;font-weight: 700;overflow-wrap: break-word;box-sizing: border-box;margin: 0px;padding: 0px;font-family: 宋体;min-height: 0px;font-size: 18px;background-image: none;background-clip: border-box;background-position: 0% 0%;background-repeat: repeat;background-size: auto;border-width: 0px;border-style: none;border-color: #333333;bottom: auto;display: inline;float: none;height: auto;left: auto;max-height: none;min-width: 0px;text-align: justify;text-decoration: none solid #333333;top: auto;z-index: auto;visibility: visible;clear: none;"><strong><span style="line-height: 28px;"><span style="color: #008080;">8080</span></span></strong><span style="color: #008080;">端口渗透剖析</span></span></span><br style="line-height: 28px;"><span style="line-height: 28px;">8080端口通常是apache_Tomcat服务器默认监听端口，apache是世界使用排名第一的web服务器。国内很多大型系统都是使用apache服务器，对于这种大型服务器的渗透，主要有以下方法：</span></span></span></span></span><br></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 7.5px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）Tomcat远程代码执行漏洞（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 18px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.freebuf.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 25px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/column/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 49px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">159200</span>.html）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）Tomcat任意文件上传。（http://liehu.tass.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 25px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 16px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">cn</span>/archives/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 25px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">836</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）Tomcat远程代码执行&amp;信息泄露。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 16px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//paper.seebug.org/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 24px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">399</span>/）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">4</span>）Jboss远程代码执行。（http://mobile.www.cnblogs.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 25px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/Safe3/archive/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 33px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2010</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 16px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">01</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 16px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">08</span>/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 59px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1642371</span>.html）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">5</span>）Jboss反序列化漏洞。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 16px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//www.zybuluo.<span class="hljs-default-keyword" style="color: #C678DD;background: ;display: inline;width: 25px;text-decoration: none solid #C678DD;font-weight: 400;font-style: normal;">com</span>/websec007/note/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 49px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">838374</span>）<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">6</span>）Jboss漏洞利用。（http<span class="hljs-default-variable" style="color: #D19A66;background: ;display: inline;width: 16px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">s:</span>//blog.csdn.net/u011215939/article/details/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 65px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">79141624</span>）</code></pre>
+</section>
+<p><strong style="font-family: 宋体;font-size: 18px;"><span style="line-height: 28px;"><span style="color: #008080;">27017</span></span></strong><span style="font-family: 宋体;font-size: 18px;font-weight: 700;color: #008080;">端口渗透剖析</span><br></p>
+<p style="margin: 10px auto;">MongoDB，NoSQL数据库；攻击方法与其他数据库类似<br></p>
+<section data-mpa-preserve-tpl-color="t" data-mpa-template="t" class="mpa-template" mpa-preserve="t" mpa-from-tpl="t">
+<pre style="margin:0;padding:0;border-radius:none;background:none;"><code style="border-radius: 4px;font-size: 0.85em;margin: 0px 0.15em;background: rgb(40, 44, 52);color: rgb(171, 178, 191);display: block;padding: 7.5px;overflow-x: auto;white-space: nowrap;" class="hljs-default">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">1</span>）爆破：弱口令<br mpa-from-tpl="t">（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 8px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">2</span>）未授权访问；（<span class="hljs-default-symbol" style="color: #61AEEE;background: ;display: inline;width: 41px;text-decoration: none solid #61AEEE;font-weight: 400;font-style: normal;">http:</span>/<span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 140px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/www.cnblogs.com/</span>LittleHann/p/<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 58px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">6252421</span>.html）（<span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 9px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">3</span>）<span class="hljs-default-symbol" style="color: #61AEEE;background: ;display: inline;width: 41px;text-decoration: none solid #61AEEE;font-weight: 400;font-style: normal;">http:</span>/<span class="hljs-default-regexp" style="color: #98C379;background: ;display: inline;width: 149px;text-decoration: none solid #98C379;font-weight: 400;font-style: normal;">/www.tiejiang.org/</span><span class="hljs-default-number" style="color: #D19A66;background: ;display: inline;width: 41px;text-decoration: none solid #D19A66;font-weight: 400;font-style: normal;">19157</span>.htm</code></pre>
+</section>
+<p style="letter-spacing: 0.544px;white-space: normal;font-family: -apple-system-font, system-ui, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;background-color: rgb(255, 255, 255);text-align: right;"><img class="" data-before-oversubscription-url="https://mmbiz.qpic.cn/mmbiz_png/ndicuTO22p6ibN1yF91ZicoggaJJZX3vQ77Vhx81O5GRyfuQoBRjpaUyLOErsSo8PwNYlT1XzZ6fbwQuXBRKf4j3Q/640?wx_fmt=png" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/beepress-image-117822-1573196898.png" style="max-width: 100%; cursor: zoom-in;"></p>
+<p style="letter-spacing: 0.544px;white-space: normal;font-family: -apple-system-font, system-ui, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;background-color: rgb(255, 255, 255);text-align: right;"><br></p>
+<p style="letter-spacing: 0.544px;white-space: normal;font-family: -apple-system-font, system-ui, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;background-color: rgb(255, 255, 255);text-align: right;"><span style="font-size: 12px;">参考来源：bmjoker博客以及品略网</span><span style="font-size: 12px;color: #888888;"></span></p>
+<p style="letter-spacing: 0.544px;white-space: normal;font-family: -apple-system-font, system-ui, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;background-color: rgb(255, 255, 255);text-align: right;"><span style="font-size: 12px;letter-spacing: 0.544px;">如有侵权，请联系删除</span></p>
+<p style="letter-spacing: 0.544px;white-space: normal;font-family: -apple-system-font, system-ui, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;background-color: rgb(255, 255, 255);text-align: center;"><br></p>
+<p><br></p>
+				                              <p><span style="color: #00B050;"><strong>本文作者：<a target="_blank" style="color: #00B050;" href="https://www.secpulse.com/archives/newpage/author?author_id=8971">HACK_Learn</a></strong></span></p>
+
+
+
+                <p><span style="color: #00B050;"><strong>本文为安全脉搏专栏作者发布，转载请注明：</strong></span><a href="https://www.secpulse.com/archives/117822.html" target="_blank" style="color: rgb(0, 176, 80); text-decoration: underline;"><span style="color: #00B050;"><strong>https://www.secpulse.com/archives/117822.html</strong></span></a></p>
+        </div>
+  			<!-- 分享 -->
+  			<div style="margin-top:30px;">
+  				<span class="tags">Tags: <a href="https://www.secpulse.com/archives/tag/%E6%B8%97%E9%80%8F" rel="tag">渗透</a>、<a href="https://www.secpulse.com/archives/tag/%e7%ab%af%e5%8f%a3%e5%88%a9%e7%94%a8" rel="tag">端口利用</a>、<a href="https://www.secpulse.com/archives/tag/%e7%ab%af%e5%8f%a3%e6%b8%97%e9%80%8f%e5%89%96%e6%9e%90" rel="tag">端口渗透剖析</a></span>  			</div>
+                            
+        <div class="left-9-icon defaultcolor clearfix" style="position: fixed;">
+            <div class="icon-left fl">
+                  <a href="javascript:void(0)" class="specsZan " data-action="ding" data-id="117822"><i class="iconfont icon-zan"></i>点赞：
+                      6                  </a>
+                  <a href="https://www.secpulse.com/archives/117822.html#goComment"><i class="iconfont iconfont icon-pinglun"></i>评论：0 </a>
+
+                 
+                  <a href="javascript:void(0)" onclick="collectionNew(this,&#39;117822&#39;)">
+                    <i class="iconfont iconfont icon-shoucang1"></i>收藏：
+                    5                  </a>
+            </div>
+            <div class="icon-right fr">
+                 
+                                <i class="iconfont icon-fenxiang1 mr20 pointer" style="position:relative;">
+                    <div class="shareMenu">
+                        <a href="http://v.t.sina.com.cn/share/share.php?appkey=&amp;url=https%3A%2F%2Fwww.secpulse.com%2Farchives%2F117822.html&amp;title=%E6%B8%97%E9%80%8F%E5%9F%BA%E7%A1%80%20%7C%20%E9%BB%91%E5%AE%A2%E5%B8%B8%E7%94%A8%E7%AB%AF%E5%8F%A3%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93%20-%20SecPulse.COM%20%7C%20%E5%AE%89%E5%85%A8%E8%84%89%E6%90%8F%E7%AB%AF%E5%8F%A3%20%E6%9C%8D%E5%8A%A1%20%E5%85%A5%E4%BE%B5%E6%96%B9%E5%BC%8F%2021%20ftp/tftp/vsftpd%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE%20%E7%88%86%E7%A0%B4/%E5%97%85%E6%8E%A2/%E6%BA%A2%E5%87%BA/%E5%90%8E%E9%97%A8%2022%20ssh%E8%BF%9C%20[&amp;hellip;]&amp;pic=https://www.secpulse.com/wp-content/uploads/2019/11/beepress-image-117822-15731968981.jpg" target="_blank" id="share_sina" class="Button Menu-item ShareMenu-button Button--plain"><i class="iconfont icon-weibo"></i>新浪微博</a>
+                        <a href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https%3A%2F%2Fwww.secpulse.com%2Farchives%2F117822.html&amp;title=%E6%B8%97%E9%80%8F%E5%9F%BA%E7%A1%80%20%7C%20%E9%BB%91%E5%AE%A2%E5%B8%B8%E7%94%A8%E7%AB%AF%E5%8F%A3%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93%20-%20SecPulse.COM%20%7C%20%E5%AE%89%E5%85%A8%E8%84%89%E6%90%8F" target="_blank" title="分享到QQ空间" id="share_qqzone"><i class="iconfont icon-QQkongjian"></i>QQ空间</a>
+                        <a href="javascript:void(0)" class="Button Menu-item ShareMenu-button Button--plain"><i class="iconfont icon-weixin"></i>微信扫一扫</a>
+                        <img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/barCode" id="weichar_img" width="70%" style="margin-left:8%;">
+                    </div>
+                </i>
+            </div>
+        </div>
+      		<!-- .single-content -->
+      </div>
+		  <!-- 相关文章 -->
+  		<section id="related_post-2" class="widget-container widget_related_post hidden-xs"><h3 class="widget-title"><i class="iconfont icon-wenzhang" style="display:inline-block;margin:0 12px 12px 0;font-size:18px;"></i>相关文章</h3>
+
+	<ul class="related_post">
+				<li><a href="https://www.secpulse.com/archives/115764.html" title="详细阅读 手机抓不到包，解决很简单"><img width="300" height="283" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/17077703c3e4f0ca8114cdf382c164ce_VCG211252342599-300x283.jpg" class="attachment-medium wp-post-image" alt="手机抓不到包，解决很简单"><p>手机抓不到包，解决很简单</p></a></li>
+				<li><a href="https://www.secpulse.com/archives/115082.html" title="详细阅读 【HTB系列】靶机Vault的渗透测试详解"><img width="300" height="161" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/微信图片_201910091504221-300x161.jpg" class="attachment-medium wp-post-image" alt="【HTB系列】靶机Vault的渗透测试详解"><p>【HTB系列】靶机Vault的渗透测试详…</p></a></li>
+				<li><a href="https://www.secpulse.com/archives/114141.html" title="详细阅读 【HTB系列】靶机Querier的渗透测试"><img width="300" height="173" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/f24dad7933883da69bae260c09e95e0e_beepress-image-114141-1570587629-300x173.jpg" class="attachment-medium wp-post-image" alt="【HTB系列】靶机Querier的渗透测试"><p>【HTB系列】靶机Querier的渗透测…</p></a></li>
+			</ul>
+
+
+</section>			
+  		
+
+<div class="comment" id="goComment">
+    <div class="comment-icon blue">
+        <i class="iconfont icon-pinglun111"></i>
+        <span class="comment-num">评论&nbsp;&nbsp;(<span id="commentNum">0</span>)</span>
+    </div>
+            <div class="comment-author-info">
+            <div class="login-input">
+                <p>
+                    <label for="author">昵称</label>
+                    <input type="text" name="author" id="author_input" value="" size="14" tabindex="1" aria-required="true" placeholder="请输入昵称" required="">
+                </p>
+                <span>必填</span>
+                <span>您当前尚未登录。
+        		<a class="simplemodal-login" href="https://www.secpulse.com/user_login" title="登录">登录？</a>
+        		<a href="https://www.secpulse.com/user-register">注册</a>
+        	</span>
+            </div>
+            <div class="login-input">
+                <p>
+                    <label for="email">邮箱</label>
+                    <input type="text" name="email" id="email_input" value="" size="25" tabindex="2" aria-required="true" placeholder="请输入邮箱地址" required="">
+                </p>
+                <span>必填（保密）</span>
+            </div>
+        </div>
+        <div class="input-text blue">快来写下你的想法吧！</div>
+    <div class="wrap-textarea" style="margin-bottom: 0px;">
+        <textarea name="express" id="express" placeholder="快来写下你的想法吧！" autoheight="true" style="height: 0px;"></textarea>
+        <div class="tijiao clearfix blue">
+            <div class="tijiao-left fl">
+                <span id="face_show" class="iconfont icon-btn_xiaolian pointer"></span>
+                <span class="iconfont icon-xiangji pointer" onclick="uploadImg(this)" style="font-size:24px;"></span>
+            </div>
+            <input type="button" id="huifu" type_btn="parent" class="fr pointer" value="发表">
+        </div>
+    </div>
+    <div style="display:none;height:200px" class="qqFace_wrp"></div>
+        <input type="hidden" id="now_page" value="">
+    <input type="hidden" id="nest_page" value="">
+    <input type="hidden" id="base_url" value="https://www.secpulse.com/wp-content/themes/secpulse2017">
+    <input id="home_url" type="hidden" value="https://www.secpulse.com/wp-admin/admin-ajax.php">
+    <div class="comment-real">
+        <ul class="first">
+                    </ul>
+            </div>
+    <form id="comment_form" action="https://www.secpulse.com/wp-comments-post.php">
+        <input name="comment" type="hidden" id="comment_content" value="">
+        <input name="email" type="hidden" id="email_content" value="">
+        <input name="author" type="hidden" id="author_content" value="">
+        <input type="hidden" name="comment_post_ID" value="117822" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="12aa9ae224"></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="141"></p>    </form>
+</div>
+
+<!-- uploadimage -->
+<form id="uploadForm" enctype="multipart/form-data" style="display: none;">
+    <input id="comment_file" type="file" name="file">
+    <button id="upload" type="button">upload</button>
+</form>
+
+<script>
+    //分页
+    function comment_page(obj){
+        var page_url = $("#nest_page").val();
+        var page_count = 0;
+        now_count = $("#now_page").val();
+        $(obj).html('加载中<i class="iconfont icon-xia"></i>');
+        if(now_count < (page_count)){
+            $.ajax({
+                url: page_url,
+                type: 'get',
+                dataType:'html',
+                timeout: 1000,
+                success: function (data) {
+                    $("#nest_page").val($(data).find('#nest_page').val());
+                    $("#now_page").val($(data).find('#now_page').val())
+                    if($(data).find(".first").html().length > 10){
+                        $(".first").append($(data).find(".first").html().replace(/\[em_([0-9]*)\]/g,'<img src="https://www.secpulse.com/wp-content/themes/secpulse2017/img/face/$1.gif" border="0" />'))
+                    }
+                    $(obj).html('显示更多<i class="iconfont icon-xia"></i>');
+
+                },error: function(jqXHR, textStatus, errorThrown) {
+                    if(jqXHR.status == 404) {
+                        $(obj).html('显示更多<i class="iconfont icon-xia"></i>');
+                    }
+                }
+            })
+        }else{
+            $(obj).html('没了<i class="iconfont icon-xia"></i>');
+        }
+    }
+
+    $(function(){
+        $('.icon-btn_xiaolian').qqFace({
+            assign:'express', //给那个控件赋值
+            path:'https://www.secpulse.com/wp-content/themes/secpulse2017/img/face/'	//表情存放的路径
+        });
+
+        $.fn.autoHeight = function(){    
+            function autoHeight(elem){
+                elem.style.height = 'auto';
+                // elem.scrollTop = 0; //防抖动
+                elem.style.height = elem.scrollHeight + 'px';
+                if(elem.scrollHeight > 500){
+                    elem.style.overflowY="scroll";
+                }
+            }
+            this.each(function(){
+                autoHeight(this);
+                $(this).on('keyup', function(){
+                    autoHeight(this);
+                });
+            });     
+        }                
+        $('textarea[autoHeight]').autoHeight();    
+    })
+
+    //替换表情
+    function replace_em(str){
+        str = str.replace(/\</g,'&lt;');
+        str = str.replace(/\>/g,'&gt;');
+        str = str.replace(/\n/g,'<br/>');
+        str = str.replace(/\[em_([0-9]*)\]/g,'<img src="https://www.secpulse.com/wp-content/themes/secpulse2017/img/face/$1.gif" border="0" />');
+        return str;
+    }
+    //图片上传
+    function uploadImg(obj){
+        $("#comment_file").click();
+        $("#comment_file").change(function(){
+            $.ajax({
+                url : "https://www.secpulse.com/wp-content/themes/secpulse2017/inc/functions/comment_ajax_file.php",
+                type: 'POST',
+                cache: false,
+                data: new FormData($('#uploadForm')[0]),
+                processData: false,
+                contentType: false,
+                dataType: 'JSON'
+            }).success(function(res) {
+                if(res.code ==1){
+                    var textvalstr = $(obj).parent('.tijiao-left').parent('.tijiao').parent('.wrap-textarea').find('textarea').val();
+                    $(obj).parent('.tijiao-left').parent('.tijiao').parent('.wrap-textarea').find('textarea').val(textvalstr + res.path);
+                }else{
+                    alert(res.msg)
+                }
+            });
+
+        });
+    }
+
+
+    //整体替换
+    var comment_str = $(".comment-real ul").html();
+    var index =
+        comment_str = comment_str.replace(/\[em_([0-9]*)\]/g,'<img src="https://www.secpulse.com/wp-content/themes/secpulse2017/img/face/$1.gif" border="0" />');
+    comment_str = comment_str.replace(/\[img=(.*?)\]/g,'<img src="https://www.secpulse.com/wp-content//$1" border="0" />');
+    html = jQuery.parseHTML(comment_str);
+    $(".comment-real ul ").html(html);
+</script>
+<!-- #comments -->
+
+		</div>
+		<style>
+.affix{display:block!important;-webkit-animation:fadeInDown 1s .2s ease both;-moz-animation:fadeInDown 1s .2s ease both;}
+.affix-bottom{display:none!important;-webkit-animation:fadeInDown 1s .2s ease both;-moz-animation:fadeInDown 1s .2s ease both;}
+@-webkit-keyframes fadeInDown{0%{opacity:0;-webkit-transform:translateY(-20px)}100%{opacity:1;-webkit-transform:translateY(0)}}
+@-moz-keyframes fadeInDown{0%{opacity:0;-moz-transform:translateY(-20px)}100%{opacity:1;-moz-transform:translateY(0)}}
+@-webkit-keyframes fadeOutUp{opacity:1;-webkit-transform:translateY(0)}100%{0%{opacity:0;-webkit-transform:translateY(-20px)}}
+@-moz-keyframes fadeOutUp{0%{opacity:1;-moz-transform:translateY(0)}100%{opacity:0;-moz-transform:translateY(-20px)}}
+</style>
+<div class="right-3 fr">
+	<table>
+		<tbody><tr class="tr0">
+			<td rowspan="3" width="92">
+				<a href="https://www.secpulse.com/newpage/author?author_id=8971aaa" target="_blank">
+					<img class="img" src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/1ca91da9312f04fadf4ab539bb3cb881.png" alt="">
+				</a>
+			</td>
+			<td colspan="2">
+				<a href="https://www.secpulse.com/newpage/author?author_id=8971" target="_blank" class="blue">
+					<p style="display:inline-block;max-width:180px;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;font-size:20px;font-weight:700;">HACK_Learn</p>
+										</a>
+			</td>
+
+		</tr>
+		<tr class="tr1">
+			<td style="text-align:left;">文章数：<span>35</span></td>
+			<td style="text-align:right;">积分：<span>
+			73			</span></td>
+		</tr>
+		<tr>
+			<td colspan="2"><p class="descrip" style="width: 100%; color: rgb(111, 107, 107);">微信公众号：HACK学习呀
+
+</p></td>
+		</tr>
+	</tbody></table>
+	 <!-- 新增产品引导 -->
+     <div id="full_feature_right" style="margin: -10px 0 -12px;">
+         <ul class="slides">
+             <li>
+                <a target="_blank" href="https://linkage.duoyinsu.com/">
+                    <img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/product-agent.png" alt="阿波罗主机安全管理" style="max-width:100%!important;height:150px;border-radius: 5px;">
+                </a>
+             </li> 
+             <li>
+                <a target="_blank" href="https://v.duoyinsu.com/">
+                    <img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/product-fute.png" alt="伏特漏洞扫描云平台" style="max-width:100%!important;height:150px;border-radius: 5px;">
+                </a>
+             </li>  
+         </ul>
+     </div>
+	 <!-- <script type="text/javascript" src="https://www.secpulse.com/wp-content/themes/secpulse2017/js/Swipeslide/swipeslider.min.js"></script>
+	 <script type="text/javascript">
+     		$('.swipsliderRight').flexslider({
+     		 animation       :   "slide",             // 动画效果类型，有"fade"：淡入淡出，"slide"：滑动"fade" 
+     		 easing          :   "swing",             // 内容切换时缓动效果，需要jquery easing插件支持"swing"
+     		 direction       :   "horizontal",          // 内容滚动方向，有"horizontal"：水平方向 和"vertical"：垂直方向"horizontal"
+     		 animationLoop   :   true,                // 是否循环滚动true
+     		 directionNav    :   false,                // 是否显示左右方向箭头按钮true
+     		});
+	 </script> -->
+				 			      	<!-- 	  <a target="_blank" href="https://www.secpulse.com/archives/94811.html" class="banner-img">
+    				<div class="img-wrp"></div>
+    				<img src="https://www.secpulse.com/wp-content/uploads/1970/01/beepress-image-94811-15468415081-e1546940399387.jpeg" alt="【干货】高级持续渗透第八季-demo即是远控">
+    				<div class="img-meta tr">
+    					<p>【干货】高级持续渗透第八季-demo即是远控</p>
+    				</div>
+    			</a> -->
+	  	    	<!-- 	  <a target="_blank" href="https://www.secpulse.com/archives/94612.html" class="banner-img">
+    				<div class="img-wrp"></div>
+    				<img src="https://www.secpulse.com/wp-content/uploads/2019/01/323.jpg" alt="【干货】高级持续渗透第七季-demo的成长">
+    				<div class="img-meta tr">
+    					<p>【干货】高级持续渗透第七季-demo的成长</p>
+    				</div>
+    			</a> -->
+	  	    	<!-- 	  <a target="_blank" href="https://www.secpulse.com/archives/81893.html" class="banner-img">
+    				<div class="img-wrp"></div>
+    				<img src="https://www.secpulse.com/wp-content/uploads/2018/11/b1d4b8e812b462d5848b09d5db54e720-e1542853011446.jpg" alt="如果全球的沙子都对你发起DDoS攻击，如何破？">
+    				<div class="img-meta tr">
+    					<p>如果全球的沙子都对你发起DDoS攻击，如何破？</p>
+    				</div>
+    			</a> -->
+	  		  	 <div class="zlzz">
+	<div class="zlzz_top clearfix">
+		<h3>安全问答社区</h3>
+	</div>
+	<img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/xcx.png" alt="安全问答社区" style="width:70%;margin:15px 15% 0;">
+</div>
+
+
+<div class="zlzz">
+	<div class="zlzz_top clearfix">
+		<h3>脉搏官方公众号</h3>
+	</div>
+	<img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/SecPulse.png" alt="脉搏公众号" style="width:70%;margin:30px 15% 0;">
+</div>
+
+<div class="zlzz clearfix">
+	<div class="zlzz_top clearfix">
+		<h3 class="fl">活动日程</h3>
+		<a target="_blank" href="https://www.secpulse.com/newpage/activity"><button class="fr pointer">显示更多</button></a>
+	</div>
+	 	<div class="timezone">
+	 	 				<div class="act clearfix">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2020-04-16</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="http://www.sins-expo.com/"><p>2020中国国际网络安全博览会暨高峰论坛</p></a>
+			</div>
+		</div>
+				<div class="act clearfix">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2020-03-31</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="http://www.energydataexpo.cn/"><p>2020中国国际智慧能源暨能源数据中心与网络信息安全装备展览会</p></a>
+			</div>
+		</div>
+				<div class="act clearfix">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2020-01-09</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://www.bagevent.com/event/6241320"><p>相约本地生活安全沙龙暨白帽子颁奖典礼</p></a>
+			</div>
+		</div>
+				<div class="act clearfix">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-10-24</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="http://2019.geekpwn.org/zh/index.html"><p>GeekPwn2019</p></a>
+			</div>
+		</div>
+				<div class="act clearfix">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-09-23</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://www.raid-2019.org/index.html"><p>RAID 2019  第22届入侵检测与防御国际会议</p></a>
+			</div>
+		</div>
+				<div class="act clearfix">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-08-01</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://www.secpulse.com/archives/104660.html"><p>2019第四届SSC安全峰会</p></a>
+			</div>
+		</div>
+				<div class="act clearfix">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-07-19</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://www.bagevent.com/event/2470198?bag_track=AQMB"><p>DAMS中国数据智能管理峰会</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-06-11</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="http://html.huiyiguanjia.com/custom/201904Tencent/index.html"><p>2019腾讯安全国际技术峰会</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-06-01</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://mobile.ccf.org.cn/ccfFileManager/web/c88c1ca054684284a490f05ec84b0788/index.html"><p>CCFTF18：数据安全与风险防控研讨会</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-05-31</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://anquan.baidu.com/special/activity/defcon/index.html"><p>DEF CON CHINA</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-05-30</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://www.huodongjia.com/event-458725687.html"><p>MOSEC移动安全技术峰会</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-05-29</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://www.butian.net/whc/2019"><p>2019补天白帽大会</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-04-29</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="http://news.cctv.com/2019/04/14/ARTIyrgizpdabXwMZhO8gsO5190414.shtml"><p>429首都网络安全日</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-04-26</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="https://www.bagevent.com/event/registerTicket/2573642"><p>2050@2019  DEFCON GROUP黑客沙龙</p></a>
+			</div>
+		</div>
+				<div class="act clearfix" style="display: none;">
+			<div class="yuan" style="top: 17px;"></div>
+			<div class="act_l fl" style="top: 2px;">
+				<h4>2019-03-30</h4>
+			</div>
+			<div class="act_r fr">
+				<a target="_blank" href="http://www.huodongxing.com/event/6475897820700?utm_source=&amp;utm_medium=&amp;utm_campaign=searchpage&amp;qd=4328363122557"><p>WBSC世界区块链安全大会【启动仪式】北京站、成都站、杭州站</p></a>
+			</div>
+		</div>
+					</div>
+</div>	
+<script>
+	// 活动日程最多7条
+	$(".act:gt(6)").hide();
+</script>
+
+
+
+	
+	 <!-- 超过1400px显示 -->
+	<div class="affd affix" style="display:none;width:325px;position:fixed;top:50px;">
+		<div class="zlzz">
+			<div class="zlzz_top clearfix">
+				<h3>安全问答社区</h3>
+			</div>
+			<img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/xcx.png" alt="安全问答社区" style="width:70%;margin:15px 15% 0;">
+		</div>
+		<div class="zlzz">
+			<div class="zlzz_top clearfix">
+				<h3>脉搏官方公众号</h3>
+			</div>
+			<img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/SecPulse.png" alt="脉搏公众号" style="width:70%;margin:30px 15% 0;">
+		</div>
+	</div>
+</div>
+
+<div class="clearfix"></div>
+<script src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/shave.js.下载"></script>
+<script>
+	shave(".descrip",60);
+	  // 溢出添加title
+    $(".img-meta p").map(function() {
+        if (this.offsetWidth < this.scrollWidth) {
+            $(this).parent().parent().attr("title",$(this).text());
+        }
+    });
+
+</script>
+   
+</div>
+<script src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/mo.min.js.下载"></script><div></div>
+<script src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/single.js.下载"></script><div style="position: absolute; top: 100px; left: 100px; width: 164px; height: 164px; margin-left: -82px; margin-top: -82px; opacity: 1; display: none; transform: rotate(0deg) translate(0px, 0px);"><svg style="position: absolute; width: 100%; height: 100%;"><ellipse cy="0" cx="0" ry="7" rx="7" transform="rotate(0,0,0)" fill-opacity="1" stroke-linecap="" stroke-dashoffset="NaN " fill="deeppink" stroke-dasharray="NaN " stroke-opacity="1" stroke-width="0" stroke="transparent" style="opacity: 1; display: none;"></ellipse><ellipse cy="0" cx="0" ry="7" rx="7" transform="rotate(0,0,0)" fill-opacity="1" stroke-linecap="" stroke-dashoffset="NaN " fill="deeppink" stroke-dasharray="NaN " stroke-opacity="1" stroke-width="0" stroke="transparent" style="opacity: 1; display: none;"></ellipse><ellipse cy="0" cx="0" ry="7" rx="7" transform="rotate(0,0,0)" fill-opacity="1" stroke-linecap="" stroke-dashoffset="NaN " fill="deeppink" stroke-dasharray="NaN " stroke-opacity="1" stroke-width="0" stroke="transparent" style="opacity: 1; display: none;"></ellipse><ellipse cy="0" cx="0" ry="7" rx="7" transform="rotate(0,0,0)" fill-opacity="1" stroke-linecap="" stroke-dashoffset="NaN " fill="deeppink" stroke-dasharray="NaN " stroke-opacity="1" stroke-width="0" stroke="transparent" style="opacity: 1; display: none;"></ellipse><ellipse cy="0" cx="0" ry="7" rx="7" transform="rotate(0,0,0)" fill-opacity="1" stroke-linecap="" stroke-dashoffset="NaN " fill="deeppink" stroke-dasharray="NaN " stroke-opacity="1" stroke-width="0" stroke="transparent" style="opacity: 1; display: none;"></ellipse></svg></div>
+
+<script type="text/javascript"> 
+	// 相关文章添加图标
+	$(".widget-title").prepend("<i class='iconfont icon-wenzhang' style='display:inline-block;margin:0 12px 12px 0;font-size:18px;'></i>");
+	var qqzone_url = 'http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+ encodeURIComponent(location.href)+ '&title='+encodeURIComponent(document.title);
+	$('#share_qqzone').attr('href',qqzone_url);
+	var sina_url = 'http://v.t.sina.com.cn/share/share.php?appkey=&url='+ encodeURIComponent(location.href)+ '&title='+encodeURIComponent(document.title)+ '端口 服务 入侵方式 21 ftp/tftp/vsftpd文件传输协议 爆破/嗅探/溢出/后门 22 ssh远 [&hellip;]&pic=https://www.secpulse.com/wp-content/uploads/2019/11/beepress-image-117822-15731968981.jpg';
+	$('#share_sina').attr('href',sina_url);
+
+   document.getElementById('weichar_img').src = "http://bshare.optimix.asia/barCode?site=weixin&url=" + window.location.href+'&w=100&h=100';
+
+ 
+	//高亮调整 
+	window.onload = function(){ 
+
+    // 限制图片不超出指定范围
+    $(".left-9-code img").removeAttr("style").css({'max-width':'100%',"cursor":"zoom-in"});
+	}
+	//微信分享移入移出
+	  $(function(){  
+          // 分享
+          $(".icon-fenxiang1").hover(function(){
+              $(this).find(".shareMenu").show();
+          },function(){
+              $(this).find(".shareMenu").hide();
+          })
+
+          var fixedTop = $("#goComment").offset().top;
+          $(window).scroll(function(){
+            //   右侧二维码显示与消失
+              if($(window).scrollTop() > 1500){
+                $('.affd').addClass('affix');
+                if(document.body.clientHeight - $('.affd').offset().top < 1250){
+                    $('.affd').addClass('affix-bottom');
+                }
+                if(document.body.clientHeight - $('.affd').offset().top >= 1250){
+                    $('.affd').removeClass('affix-bottom');
+                }
+              }
+              if($(window).scrollTop() <= 1500){
+                $('.affd').removeClass('affix');
+              }
+            // 文章底部固定条              
+              if(fixedTop - $(window).scrollTop() - 200 > $(window).height()){
+                  //fixedEl.fadeIn(200);  淡入
+                  $(".left-9-icon").css("position","fixed");
+              }else{
+                 // fixedEl.fadeOut(200);  淡出
+                  $(".left-9-icon").css("position","absolute");
+              }
+          });
+      }) ;
+      //分类设为高亮
+      $(function(){
+          $(".header-menu_ul").children().eq(1).find('a').eq(0).css("color","rgb(15, 72, 125)")
+		//rgb(15, 72, 125)
+      });
+
+      // 点击图片弹出层
+      $(document).on("click",".left-9-code img",function(){
+      		var html = '';
+      		html += '<div class="appendImg_wrap" style="width:100%;height:100%;text-align:center;position:fixed;top:0;left:0;padding:0px;margin:0px;visibility:visible;background-color:rgba(0, 0, 0, 0.2)">';
+      		var srcUrl = '';
+          var imgH = $(this).height()*1.2;
+          var imgW = $(this).width()*1.2;
+
+      		if($(this).parent().attr("href") == undefined){
+                srcUrl = $(this).attr("src");
+            }else{
+                srcUrl = $(this).parent().attr("href")
+            }
+      		html += '<img style="max-width:80%;vertical-align:middle;cursor:zoom-out;" class="appendImg" src="'+srcUrl+'">';
+      		html += '<span style="display:inline-block;height:100%;vertical-align:middle;"></span>';
+      		html += '</div>';           
+          $(document.body).append(html);
+          $(".appendImg_wrap img").animate({"width":imgW,"height":imgH},250);
+      		return false;
+      })
+      $(document).on("click",".appendImg_wrap",function(e){
+          var imgH = $(this).find("img").height()/1.2;
+          var imgW = $(this).find("img").width()/1.2;
+          $(".appendImg_wrap img").animate({"width":imgW,"height":imgH,"opacity":0},250);
+          $(".appendImg_wrap").animate({"opacity":0},250);  		    
+          setTimeout(function(){ $(".appendImg_wrap").remove();},260);
+  	  });
+   
+
+</script>
+<!-- 合作伙伴 -->
+<!-- 合作伙伴 -->
+<!-- <div id="partner">
+		
+<h3 class="blue">合作伙伴</h3><hr>
+<ul class="partner_ul clearfix">
+    <li><a href="https://www.duoyinsu.com" target="_blank"><img src="https://www.secpulse.com/wp-content/uploads/anshi-logo.png" alt="安识科技"></a></li>
+    <li><a href="https://xianzhi.aliyun.com" target="_blank"><img src="https://www.secpulse.com/wp-content/uploads/xianzhi.png" alt="先知安全服务"></a></li>
+    <li><a href="#" target="_blank"><img src="https://www.secpulse.com/wp-content/uploads/yunzhongkexin.png" alt="云中可信" style="height:36px;"></a></li>
+    <li><a href="https://www.xctf.org.cn" target="_blank"><img src="https://www.secpulse.com/wp-content/uploads/xctf.png" alt="CTF社区"></a></li>
+    <li><a href="http://www.milw0rm.cn/" target="_blank"><img src="https://www.secpulse.com/wp-content/uploads/milw0rm.png" alt="Milw0rm Team"></a></li>
+    <li><a href="https://bysec.io/" target="_blank"><img src="https://www.secpulse.com/wp-content/uploads/bysec.png" alt="Milw0rm Team"></a></li>
+</ul>
+</div> --><!-- 友情链接 -->
+<!-- 友情链接 -->
+<div id="link">
+    <h3 class="blue" style="margin-top:30px;">友情链接</h3><hr>
+    <ul class="link_ul clearfix">
+                        	<li><a href="http://www.ijiandao.com/" target="__back">网络尖刀</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://www.easyaq.com/" target="__back">E安全</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://www.sec-wiki.com/" target="__back">Sec-Wiki</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://www.waitalone.cn/" target="__back">独自等待</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://www.ihonker.org/" target="__back">中国红客联盟</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.nagain.com/" target="__back">娜迦信息</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://www.secsilo.com/" target="__back">SecSilo</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://team.armyzer0.com/links/" target="__back">armyzer0</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.e365.org/" target="__back">易安在线</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://www.ichunqiu.com/" target="__back">i春秋</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.tiejiang.org/" target="__back">铁匠运维网</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.itet.cn/" target="__back">北京ITET培训中心</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.ineice.com/" target="__back">爱内测</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.shellsec.com/" target="__back">神刀安全网</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.52bug.cn/" target="__back">吾爱漏洞</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://aq.163.com/module/partner.html" target="__back">网易安全中心</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.chamd5.org/team/" target="__back">ChaMd5安全团队</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.secbug.org/" target="__back">破晓团队</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.heibai.org/" target="__back">黑白网</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="http://www.ms08067.com/" target="__back">ms08067</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://www.77169.net/" target="__back">华盟网</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://adworld.xctf.org.cn/" target="__back">攻防世界</a></li>
+    	                    	<li><small>|</small></li>
+    	    	<li><a href="https://iphunter.net/" target="__back">IPHunter</a></li>
+    	        </ul>
+</div><!-- <div id="footer">
+    <div class="inner clearfix">
+        <div class="footer_part tl">
+            <h3>SecPluse</h3>
+            <ul>
+                <li><a target="_blank" href="/aboutus#about_Us">关于我们</a></li>
+                <li><a target="_blank" href="/aboutus#join_Us">加入我们</a></li>
+                <li><a target="_blank" href="/aboutus#contact_Us">联系我们</a></li>
+            </ul>
+        </div>
+        <div class="footer_part tc">
+            <h3>关注我们</h3>
+            <ul>
+                <li class="qrcode">
+                    <a target="_blank" href="javascript:void:(0)">官方微信</a>
+                    <div class="qrcode_wrp">
+                        <div class="triangle"></div>
+                        <img src="https://www.secpulse.com/wp-content/themes/secpulse2017/img/qrcode.jpg" alt="安全脉搏">                     
+                    </div>
+                </li>
+                <li><a target="_blank" href="https://weibo.com/311057789">新浪微博</a></li>
+                <li><a target="_blank" href="https://zhuanlan.zhihu.com/secpulse">知乎专栏</a></li>
+            </ul>
+        </div>
+        <div class="footer_part tr">
+            <h3 style="margin-right:70px;">支持单位</h3>
+            <a href="https://www.duoyinsu.com/"><img src="https://www.secpulse.com/wp-content/themes/secpulse2017/img/logo_footer.png" alt="安识科技"></a>
+        </div>
+    </div>
+    <div class="inner_bot">
+    <p>©2013-2018 安全脉搏  </p>
+</div> -->
+<div id="footer">
+    <div class="inner clearfix">
+        <div class="footer_part tl" style="width:30%">
+            <div class="ulitem fl">
+                <h3>关注我们</h3>
+                <ul>
+                    <li class="qrcode">
+                        <a target="_blank" href="javascript:void:(0)">官方微信</a>
+                        <div class="qrcode_wrp">
+                            <div class="triangle"></div>
+                            <img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/qrcode.jpg" alt="安全脉搏">
+                        </div>
+                    </li>
+                    <li class="qrcode">
+                        <a target="_blank" href="javascript:void:(0)">安全问答</a>
+                        <div class="qrcode_wrp">
+                            <div class="triangle"></div>
+                            <img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/wxchat.jpg" style="border:8px solid #fff;" alt="安全问答">
+                        </div>
+                    </li>
+                    <li><a target="_blank" href="https://weibo.com/311057789">新浪微博</a></li>
+                    <li><a target="_blank" href="https://zhuanlan.zhihu.com/secpulse">知乎专栏</a></li>
+                    
+                </ul>
+            </div>
+            <div class="ulitem fl">
+                <h3>SecPluse</h3>
+                <ul>
+                    <li><a target="_blank" href="https://www.secpulse.com/aboutus#about_Us">关于我们</a></li>
+                    <li><a target="_blank" href="https://www.secpulse.com/aboutus#join_Us">加入我们</a></li>
+                    <li><a target="_blank" href="https://www.secpulse.com/aboutus#contact_Us">联系我们</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer_part tl" style="width:36.6%">
+            <h3 style="margin-bottom:8px">合作伙伴</h3>
+            <ul class="partner_ul clearfix" style="width:80%">
+                <li><a href="https://www.duoyinsu.com/" target="_blank"><img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/anshi-logo.png" alt="安识科技"></a></li>
+                <li style="margin-right:20px"><a href="https://www.secpulse.com/archives/117822.html#" target="_blank"><img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/yunzhongkexin.png" alt="云中可信"></a></li>
+                <li><a href="https://www.xctf.org.cn/" target="_blank"><img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/xctf.png" alt="CTF社区"></a></li>
+            </ul>
+        </div>
+        <div class="footer_part">
+            <h3>关于我们</h3>
+            <p>安全脉搏（secpulse.com）是以互联网安全为核心的学习、交流、分享平台，集媒体、培训、招聘、社群为一体，全方位服务互联网安全相关的管理，研发和运维人，平台聚集了众多安全从业者及安全爱好者，他们在这里分享知识、招聘人才，与你一起成长。</p>
+        </div>
+    </div>
+    <div class="inner_bot">
+        <p style="display:inline;"><a target="_blank" href="http://www.beian.miit.gov.cn/">©2013-2020 安全脉搏 沪ICP备16016474号 </a></p>
+        <a style="display:inline;" target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31010402005682"><img src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/beian.png" style="display:inline;vertical-align:top;margin: 10px 0;"><p style="display:inline;margin: 0px 0px 0px 5px;">沪公网安备 31010402005682号</p></a>
+    </div> 
+
+             
+</div>
+<script src="./渗透基础 _ 黑客常用端口利用总结 - SecPulse.COM _ 安全脉搏_files/detail.js.下载"></script>
+<script>
+    $(function(){
+        str = $(".title_top li:last-child").map(function(){ 
+            $(this).html('');
+        }).get().join(',');
+    })
+    $(".qrcode a").hover(function(){
+        $(this).next().show();
+    },function(){
+        $(this).next().hide();
+    })
+
+</script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?7f4cc5524dcb1aec487b4266c18bae48";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+$(function(){
+    // $(".header-menu_ul>li:eq(0)").children("a").css("border-bottom","2px solid #297bc7");
+    // $(".header-menu_ul>li:eq(0)").children("a").css("color","#297bc7");
+})
+</script>
+
+
+
+</body></html>

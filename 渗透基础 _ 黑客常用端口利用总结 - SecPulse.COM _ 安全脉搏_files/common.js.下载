@@ -1,0 +1,190 @@
+//分页
+function nextPage(the_is){
+	var loading_url = $("#template_url").val()+'/img/loading.gif';
+	var page = $(the_is).attr('pageurl');
+	$(the_is).html('<img width="61px" style="margin:6px 0px;" src="'+ loading_url +'">')
+	$.ajax({
+	  url: page,
+	  type: 'get',
+	  dataType:'html',
+	  timeout: 500000,
+	  // async:false,
+	  success: function (data) {
+		  var res = $(data).find('.contets_page').html();
+		  if(res.length < 250){
+			  $(the_is).html('没了')
+		  }else{
+			  $('.contets_page').append(res);
+			  $(the_is).html('显示更多 <i class="iconfont icon-xia"></i>');
+		  }
+		  $(the_is).attr('pageurl',$(data).find('.more_btn').attr('pageurl'));
+	  },error: function(jqXHR, textStatus, errorThrown) {
+          if(jqXHR.status == 404) {
+        	  $(the_is).html('没了')
+          }
+      }
+	})
+}
+
+
+//作者详情页分页
+function authorNextPage(the_is){
+	var loading_url = $("#template_url").val()+'/img/loading.gif';
+	var page = $(the_is).attr('pageurl');
+	$(the_is).html('<img width="61px" style="margin:6px 0px;" src="'+ loading_url +'">')
+	$.ajax({
+	  url: page,
+	  type: 'get',
+	  dataType:'html',
+	  timeout: 1000,
+	  success: function (data) {
+		  var res = $(data).find('.content').html();
+		  if(res.length < 250){
+			  $(the_is).html('没了')
+		  }else{
+			  $('.content').append(res);
+			  $(the_is).html('显示更多 <i class="iconfont icon-xia"></i>');
+		  }
+		  // $(the_is).attr('pageurl',$(data).find('.more_btn').attr('pageurl'));
+	  },error: function(jqXHR, textStatus, errorThrown) {
+          if(jqXHR.status == 404) {
+        	  $(the_is).html('没了')
+          }
+      }
+	})
+}
+
+
+//文章点赞
+$.fn.postLike = function() {
+	makeType = $(this).attr('id');
+	if ($(this).hasClass('done')) {
+		//已经赞过
+		if($(this).attr('bt_type') ==2){
+			alert('您已踩');
+		}else{
+			alert('您已赞');
+		}
+		return false;
+	} else {
+		var id = $(this).data("id"),
+		action = $(this).data('action'),
+		rateHolder = $(this);
+		$(this).addClass('done');
+		var ajax_data = {
+			action: "specs_zan",
+			um_id: id,
+			um_action: action,
+			async: false
+		};
+		$.post($("#home_url").val(), ajax_data,
+		function(data) {
+			if(data == 0){
+				window.location.href= $("#wp_home_url").val()+ '/wp-login.php';
+			}else{
+				if(makeType !='zan'){
+					var str = '<i class="iconfont icon-zan" style="padding:3px"></i>'+data
+					$(rateHolder).html(str);
+					$(rateHolder).css('color','#297bc7');
+				}
+			}
+		});
+		return false;
+	}
+};
+$(document).on("click", ".specsZan",
+	function() {
+		$(this).postLike();
+});
+
+
+//文章收藏
+function collection(theis,post_id){
+    var ajax_data = {
+        action: "specs_collection",
+        post_id: post_id,
+        async: false
+    };
+	console.log($("#home_url").val())
+	// https://www.secpulse.com/wp-admin/admin-ajax.php
+    $.post($("#home_url").val(), ajax_data,
+        function(data) {
+            var result = JSON.parse(data);
+            if(data == 0){
+				alert('请登录');
+			}else{
+                if(result.code =='1'){
+                    $(theis).css('color' ,'#297bc7');
+                    $(theis).html('<i class="iconfont iconfont icon-shoucang1"></i>收藏：'+result['num']);
+                    alert("收藏成功")
+                }else{
+                    alert(result.msg);
+                }
+			}
+
+
+        });
+}
+//文章收藏
+function collectionNew(theis,post_id){
+	var ajax_data = {
+		action: "specs_collection",
+		post_id: post_id,
+		async: false
+	};
+	$.post('https://www.secpulse.com/wp-admin/admin-ajax.php', ajax_data, function(data) {
+			var result = JSON.parse(data);
+			if(data == 0){
+				alert('请登录');
+			}else{
+				if(result.code =='1'){
+					$(theis).css('color' ,'#297bc7');
+					$(theis).html('<i class="iconfont iconfont icon-shoucang" style="padding-right:3px;"></i>' + result['num']);
+					alert("收藏成功")
+				}else{
+					alert(result.msg);
+				}
+			}
+
+	});
+}
+
+//关注作者
+function follow(the_s ,user_id ,type) {
+    $.get($("#wp_home_url").val()+'/newpage/gt_shop?action=follow&user_id='+user_id,function (data) {
+        var data = JSON.parse(data);
+
+        if(data.code =='1'){
+        	$(the_s).text('已关注');
+        	if(type ==1){
+        		if($(the_s).is(".guanzhuAll")){
+                	$(the_s).css({'color':'#fff','background':'#297bc7',"border":"1px solid #fff"});
+        		}else{
+                	$(the_s).css({'color':'#fff','background':'#297bc7',"border":"1px solid #5b5b5b"});
+        		}
+			}else if(type ==0){
+                $(the_s).css('color' ,'#fff');
+                $(the_s).css('background','transparent');
+			}else {
+				console.log(1)
+			}
+
+		}else if(data.code=='2'){
+            $(the_s).text('关注');
+           	$(the_s).parents(".follow_every").remove();
+            if(type !=3){
+                $(the_s).css('color' ,'');
+                $(the_s).css('background','');
+			}
+			if($(the_s).is(".guanzhuAll")){
+            	$(the_s).css({'color':'#5b5b5b','background':'transparent',"border":"1px solid #5b5b5b"});
+    		}else{
+            	$(the_s).css({'color':'#fff','background':'transparent',"border":"1px solid #fff"});
+    		}
+
+		}else {
+			alert(data.msg);
+		}
+
+    });
+}

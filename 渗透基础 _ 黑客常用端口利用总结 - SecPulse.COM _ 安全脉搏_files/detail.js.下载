@@ -1,0 +1,171 @@
+//强力推荐
+// 选项卡
+$('#main .tab a').click(function(){
+    //清除原有文章
+    $(".contets_page").html('');
+    // 添加loading
+    $("#main .contents").css("text-align","center").prepend("<img class='first_loading' src='"+$("#template_url").val()+"/img/first_loading.gif' style='margin-top:100px;'>")
+    $('.more_btn').hide();
+    //最新文章
+    if($(this).attr('for') == 'new_ports'){
+        getPots('/page/1/?type=new_ports')
+    }else{
+        getPots('/page/1/?type=recommend');
+    }
+    var index = $(this).index();
+    $('#main .tab a').removeClass('cur').eq(index).addClass('cur');
+
+    //$(".contets_page").html('<div style="align:center;"><img src="'+$("#template_url").val()+'/img/loding.gif"></div>');
+    // $('.more_btn').html('显示更多<i class="iconfont icon-xia"></i>');
+})
+
+/**
+ * 请求tab
+ */
+function getPots(url){
+    var base_url = $("#base_url").val();
+    $.ajax({
+        url: base_url+url,
+        success: function(data){
+            // 删除loading.git
+            $(".first_loading").remove();
+            $("#main .contents").css("text-align","left");
+            $('.more_btn').show();
+
+            var res = $(data).find('.contets_page').html();
+            $('.more_btn').attr('pageurl',$(data).find('.more_btn').attr('pageurl'));
+            if(res.length >10){
+                $('.contets_page').append(res);
+            }else{
+                $('.more_btn').html('没了')
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            if(jqXHR.status == 404) {
+                $(the_is).html('没了')
+            }
+        }
+    });
+}
+
+// 发表评论
+// $(".wrap-textarea input").click(function(){
+//  var content = $("#express").val();
+//  var str = replace_em(content);
+//  $(".wrap-textarea").css("display","none");
+//  $(".input-text").css("display","block");
+//  $("#commentNum").html($(".comment-real ul li").length);
+// })
+ajax_php_url = js_url.replace('comments-ajax.js','../inc/functions/comment-ajax.php'),
+
+    // 回复评论
+    $(document).on('click', '#huifu', function() {
+        $(this).parent().hide();
+        $(this).parent().siblings().hide();
+        $(this).parent().parent().append("<img class='first_loading' src='"+$("#template_url").val()+"/img/first_loading.gif'>").css({"border":"none","text-align":"center"});
+        var objHuifuExpress = $(this).parent().prev().val();
+        $("#comment_content").val(objHuifuExpress);
+        $("#email_content").val($("#email_input").val())
+        $("#author_content").val($("#author_input").val())
+        str = '';
+        $.ajax({
+            url: ajax_php_url,
+            data: $("#comment_form").serialize(),
+            type: 'POST',
+            async: false,
+            success:function(data){
+                str = data;
+                // $(".first_loading").remove();
+            },
+            error:function(e){
+                if(e.responseText == '1'){
+                    alert('请登录');
+                    window.open($("#wp_home_url").val()+'/user_login');
+                }else{
+                    alert(e.responseText);
+                }
+                $(".first_loading").remove();
+            },
+        });
+        if($(this).attr('type_btn') == 'parent'){
+            $(".comment-real ul").append(str);
+            //刷新
+            location.reload(true);
+        }else{
+            $(this).parent().parent().parent().append(str);
+        }
+        $("#commentNum").html($(".comment-real ul li").length);
+        // $(".first_loading").remove();
+    });
+//右侧banner移入移出
+$(".right-3 .banner-img").mouseover(function(){
+    $(this).find(".img-wrp").css("opacity","0");
+    $(this).css("transform","scale(1.1,1.1)");
+}).mouseout(function(){
+    $(this).find(".img-wrp").css("opacity","0.3");
+    $(this).css("transform","scale(1,1)");
+})
+//发表评论
+$(".input-text").click(function(){
+    $('#comment_parent').val(0);
+    $(this).css("display","none");
+    $(".wrap-textarea").css("display","none");
+    $(this).next(".wrap-textarea").css("display","block");
+})
+function replay(obj){
+    var parent_id = $(obj).attr('parent_id');
+    $('#comment_parent').val(parent_id);
+    var replay_html = '';
+    replay_html += '<div class="wrap-textarea" style="display:block;">';
+    replay_html += '<textarea id="huifu-express" placeholder="请输入评论!"></textarea>';
+    replay_html += '<div class="tijiao clearfix blue">';
+    replay_html += '<div class="tijiao-left fl">';
+    replay_html += '<span class="iconfont icon-btn_xiaolian"></span>';
+    replay_html += '<span class="iconfont icon-xiangji" onclick="uploadImg(this)" style="font-size:24px;"></span>';
+    //replay_html += '<span>@</span>';
+    //replay_html += '<span>#</span>';
+    replay_html += '</div>';
+    replay_html += '<input type="button" class="fr pointer" value="发表" id="huifu">';
+    replay_html += '</div>';
+
+    $(".wrap-textarea").css("display","none");
+    $(".input-text").css("display","block");
+    $(obj).parent().append(replay_html);
+    $('.icon-btn_xiaolian').qqFace({
+        assign:'huifu-express', //给那个控件赋值
+        path:$("#base_url").val()+ '/img/face/' //表情存放的路径
+    });
+}
+
+//点赞
+function dianzan(obj){
+    $(obj).toggleClass("blue");
+    var $see_num = $(obj).find(".see_num");
+    var num = $see_num.html();
+    $(obj).hasClass("blue") ? num++ : num--;
+    $see_num.html(num);
+}
+
+
+//活动设置距离
+function setTop(){
+    $(".act p").each(function(){
+        var t_num=$(this).position().top;
+        h4_num = t_num + 2;
+        y_num = t_num + 17;
+        $(this).parents(".act").find(".yuan").css("top",y_num);
+        $(this).parents(".act").find(".act_l").css("top",h4_num);
+    })
+    var height = $(".timezone").height() + 30;
+    $(".line").height(height);
+}
+setTop();
+
+$("#commentNum").html($(".comment-real ul li").length);
+
+// 首页banner小图透明度变化
+$("#banner .img0").hover(function(){
+    $(this).find(".img-wrp").hide();
+},function(){
+    $(this).find(".img-wrp").show();
+})
